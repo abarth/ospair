@@ -15,6 +15,10 @@ export class PlayerControler {
     return this.players.get(id)!;
   }
 
+  getPlayers(ids: PlayerId[]): Player[] {
+    return ids.map((id) => this.getPlayer(id));
+  }
+
   get allPlayers(): Player[] {
     return [...this.players.values()];
   }

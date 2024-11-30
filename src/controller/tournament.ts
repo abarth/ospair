@@ -9,6 +9,8 @@ import {
   Team,
   ClubName,
   PlayerName,
+  Seating,
+  teamNames,
 } from "../model/objects";
 import { playerController } from "./player";
 
@@ -31,6 +33,23 @@ export function hasRegisteredPlayers(tournament: Tournament): boolean {
 export function hasActivePlayers(tournament: Tournament): boolean {
   const round = getCurrentRound(tournament);
   return round.players.length > round.dropped.length;
+}
+
+export function getSeatAssignments(round: Round): Map<PlayerId, Seating> {
+  const seatings = new Map<PlayerId, Seating>();
+
+  for (const table of round.tables) {
+    for (const [teamIndex, team] of table.teams.entries()) {
+      for (const playerId of team) {
+        seatings.set(playerId, {
+          number: table.number,
+          team: table.teams.length === 1 ? undefined : teamNames[teamIndex],
+        });
+      }
+    }
+  }
+
+  return seatings;
 }
 
 export function registerPlayer(

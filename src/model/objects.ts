@@ -2,6 +2,7 @@ export type PlayerId = number;
 export type PlayerName = string;
 export type ClubName = string;
 export type TableNumber = number;
+type TeamName = string;
 
 export enum MatchResult {
   Win = "win",
@@ -15,12 +16,20 @@ export interface Player {
   club: ClubName;
 }
 
+export const teamNames = ["Team A", "Team B", "Team C"];
+
 export type Team = PlayerId[];
 
 export interface Table {
   number: TableNumber;
   teams: Team[];
   results: MatchResult[];
+}
+
+export interface Seating {
+  number: TableNumber;
+  // If a player does not have a team, the player has a bye.
+  team?: TeamName;
 }
 
 export interface Round {
