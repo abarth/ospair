@@ -1,25 +1,29 @@
 import React, { useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import { PlayerList } from "./Views";
+import PlayerList from "./views/PlayerList";
 import { FileUploader } from "react-drag-drop-files";
 import { parse } from "papaparse";
-import { TournamentController } from "./tournamentController";
-import { Registration, isRegistration } from "./model";
-
-const tournamentController = new TournamentController();
+import { isRegistration, Tournament } from "./model/objects";
+import { createTournament, registerPlayer } from "./controller/tournament";
 
 function App() {
+  const [tournament, setTournament] = useState<Tournament>(createTournament);
   const handleChange = (file: File) => {
     parse(file, {
       header: true,
+      skipEmptyLines: true,
       complete: function (results, file) {
+        let updatedTournament = tournament;
         for (const entry of results.data) {
           if (!isRegistration(entry)) continue;
           let name = entry["First Name"] + " " + entry["Last Name"];
-          tournamentController.registerPlayer(name, entry["Club"]);
+          updatedTournament = registerPlayer(
+            updatedTournament,
+            name,
+            entry["Club"],
+          );
         }
-        console.log(tournamentController.players);
+        setTournament(updatedTournament);
       },
     });
   };
@@ -35,6 +39,7 @@ function App() {
       >
         Put the players.csv file here
       </FileUploader>
+      <PlayerList players={tournament.players} />
     </div>
   );
 }

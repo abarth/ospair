@@ -15,18 +15,22 @@ export interface Player {
   club: ClubName;
 }
 
+export type Team = PlayerId[];
+
 export interface Table {
   number: TableNumber;
-  teams: PlayerId[][];
+  teams: Team[];
   results: MatchResult[];
 }
 
 export interface Round {
+  players: PlayerId[];
   tables: Table[];
+  dropped: PlayerId[];
 }
 
 export interface Tournament {
-  players: Player[];
+  players: PlayerId[];
   rounds: Round[];
 }
 
