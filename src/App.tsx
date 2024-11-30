@@ -9,7 +9,6 @@ import {
 } from "./controller/tournament";
 import {
   AppBar,
-  Box,
   Button,
   CssBaseline,
   Stack,
@@ -68,12 +67,10 @@ function App() {
             {actions}
           </Toolbar>
         </AppBar>
-        <Box component="main" sx={{ p: 3 }}>
-          <TournamentManager
-            tournament={tournament}
-            onTournamentUpdated={setTournament}
-          />
-        </Box>
+        <TournamentManager
+          tournament={tournament}
+          onTournamentUpdated={setTournament}
+        />
       </Stack>
     </React.Fragment>
   );
