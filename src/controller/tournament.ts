@@ -52,6 +52,16 @@ export function registerPlayers(tournament: Tournament, players: PlayerId[]) {
   };
 }
 
+export function unregisterPlayer(
+  tournament: Tournament,
+  playerId: PlayerId,
+): Tournament {
+  return {
+    ...tournament,
+    players: tournament.players.filter((player) => player !== playerId),
+  };
+}
+
 export function getCurrentRound(tournament: Tournament): Round {
   if (tournament.rounds.length === 0) {
     throw new Error("Tournament has not started yet.");
