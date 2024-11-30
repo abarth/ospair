@@ -30,6 +30,7 @@ export interface Round {
 }
 
 export interface Tournament {
+  name: string;
   players: PlayerId[];
   rounds: Round[];
 }
