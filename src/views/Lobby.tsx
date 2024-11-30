@@ -1,12 +1,21 @@
-import { Card, CardContent, Container, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Container,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { PlayerId, Tournament } from "../model/objects";
 import {
   registerPlayers,
+  unregisterPlayer,
   hasRegisteredPlayers,
 } from "../controller/tournament";
 import PlayerImporter from "./PlayerImporter";
 import PlayerChip from "./PlayerChip";
 import TournamentSettings from "./TournamentSettings";
+import RegisterPlayerButton from "./RegisterPlayerButton";
 
 export default function Lobby({
   tournament,
@@ -21,7 +30,13 @@ export default function Lobby({
   let players;
   if (hasRegisteredPlayers(tournament)) {
     players = tournament.players.map((player) => (
-      <PlayerChip key={player} player={player} />
+      <PlayerChip
+        key={player}
+        player={player}
+        onDelete={() =>
+          onTournamentUpdated(unregisterPlayer(tournament, player))
+        }
+      />
     ));
   } else {
     players = <Typography>No players</Typography>;
@@ -52,13 +67,21 @@ export default function Lobby({
         <CardContent>
           <Stack>
             <Typography variant="h6">Players</Typography>
-            <Stack
-              direction="row"
-              useFlexGap
-              spacing={1}
-              sx={{ flexWrap: "wrap" }}
-            >
-              {players}
+            <Box sx={{ py: 2 }}>
+              <Stack
+                direction="row"
+                useFlexGap
+                spacing={1}
+                sx={{ flexWrap: "wrap" }}
+              >
+                {players}
+              </Stack>
+            </Box>
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <RegisterPlayerButton
+                tournament={tournament}
+                onTournamentUpdated={onTournamentUpdated}
+              />
             </Stack>
           </Stack>
         </CardContent>

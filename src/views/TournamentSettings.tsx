@@ -14,6 +14,7 @@ export default function TournamentSettings({
         id="outlined-basic"
         label="Tournament Name"
         variant="outlined"
+        fullWidth
         value={tournament.name}
         onChange={(event) =>
           onTournamentUpdated({ ...tournament, name: event.target.value })
