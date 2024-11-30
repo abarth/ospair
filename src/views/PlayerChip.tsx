@@ -9,6 +9,8 @@ export default function PlayerChip({
   player: PlayerId;
   onDelete?: () => void;
 }) {
-  const model = playerController.getPlayer(player);
-  return <Chip label={model.name} variant="outlined" onDelete={onDelete} />;
+  const playerModel = playerController.getPlayer(player);
+  return (
+    <Chip label={playerModel.name} variant="outlined" onDelete={onDelete} />
+  );
 }
