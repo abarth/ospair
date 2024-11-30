@@ -7,19 +7,9 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import StyledTableRow from "./StyledTableRow";
 import { Round } from "../model/objects";
 import { playerController } from "../controller/player";
-
-const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  "&:nth-of-type(odd)": {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  "&:last-child td, &:last-child th": {
-    border: 0,
-  },
-}));
 
 export default function Standings({ round }: { round: Round }) {
   return (
@@ -39,10 +29,7 @@ export default function Standings({ round }: { round: Round }) {
             const playerModel = playerController.getPlayer(player);
 
             return (
-              <StyledTableRow
-                key={player}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
+              <StyledTableRow key={player}>
                 <TableCell component="th" scope="row">
                   {index + 1}
                 </TableCell>
