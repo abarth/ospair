@@ -1,46 +1,81 @@
-import React, { useState } from "react";
-import "./App.css";
-import PlayerList from "./views/PlayerList";
-import { FileUploader } from "react-drag-drop-files";
-import { parse } from "papaparse";
-import { isRegistration, Tournament } from "./model/objects";
-import { createTournament, registerPlayer } from "./controller/tournament";
+import * as React from "react";
+import { Tournament } from "./model/objects";
+import {
+  createTournament,
+  startRound,
+  hasActivePlayers,
+  hasCurrentRound,
+  hasRegisteredPlayers,
+} from "./controller/tournament";
+import {
+  AppBar,
+  Box,
+  Button,
+  CssBaseline,
+  Stack,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import TournamentManager from "./views/TournamentManager";
 
 function App() {
-  const [tournament, setTournament] = useState<Tournament>(createTournament);
-  const handleChange = (file: File) => {
-    parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      complete: function (results, file) {
-        let updatedTournament = tournament;
-        for (const entry of results.data) {
-          if (!isRegistration(entry)) continue;
-          let name = entry["First Name"] + " " + entry["Last Name"];
-          updatedTournament = registerPlayer(
-            updatedTournament,
-            name,
-            entry["Club"],
-          );
-        }
-        setTournament(updatedTournament);
-      },
-    });
-  };
-  const types = ["csv"];
+  const [tournament, setTournament] =
+    React.useState<Tournament>(createTournament);
+
+  let actions;
+  if (hasCurrentRound(tournament)) {
+    actions = (
+      <Stack direction="row" spacing={2}>
+        <Button
+          color="inherit"
+          disabled={!hasActivePlayers(tournament)}
+          onClick={() => setTournament(startRound(tournament))}
+        >
+          Next Round
+        </Button>
+      </Stack>
+    );
+  } else {
+    actions = (
+      <Stack direction="row" spacing={2}>
+        <Button
+          color="inherit"
+          disabled={!hasRegisteredPlayers(tournament)}
+          onClick={() => setTournament(startRound(tournament))}
+        >
+          Start
+        </Button>
+      </Stack>
+    );
+  }
+
+  let title;
+  if (hasCurrentRound(tournament)) {
+    title = `Round ${tournament.rounds.length}`;
+  } else {
+    title = "Lobby";
+  }
+
   return (
-    <div>
-      <h1>Old School Tournament Runner</h1>
-      <FileUploader
-        handleChange={handleChange}
-        name="players.csv"
-        label="Upload or drop a players.csv file here"
-        types={types}
-      >
-        Put the players.csv file here
-      </FileUploader>
-      <PlayerList players={tournament.players} />
-    </div>
+    <React.Fragment>
+      <CssBaseline />
+      <Stack>
+        <AppBar position="static">
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              {tournament.name}: {title}
+            </Typography>
+            {actions}
+          </Toolbar>
+        </AppBar>
+        <Box component="main" sx={{ p: 3 }}>
+          <TournamentManager
+            tournament={tournament}
+            onTournamentUpdated={setTournament}
+          />
+        </Box>
+      </Stack>
+    </React.Fragment>
   );
 }
 

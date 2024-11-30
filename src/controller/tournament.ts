@@ -14,9 +14,23 @@ import { playerController } from "./player";
 
 export function createTournament(): Tournament {
   return {
+    name: "Untitled Tournament",
     players: [],
     rounds: [],
   };
+}
+
+export function hasCurrentRound(tournament: Tournament): boolean {
+  return tournament.rounds.length > 0;
+}
+
+export function hasRegisteredPlayers(tournament: Tournament): boolean {
+  return tournament.players.length > 0;
+}
+
+export function hasActivePlayers(tournament: Tournament): boolean {
+  const round = getCurrentRound(tournament);
+  return round.players.length > round.dropped.length;
 }
 
 export function registerPlayer(
@@ -28,6 +42,13 @@ export function registerPlayer(
   return {
     ...tournament,
     players: [...tournament.players, player],
+  };
+}
+
+export function registerPlayers(tournament: Tournament, players: PlayerId[]) {
+  return {
+    ...tournament,
+    players: [...tournament.players, ...players],
   };
 }
 
