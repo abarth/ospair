@@ -4,9 +4,9 @@ export type ClubName = string;
 export type TableNumber = number;
 
 export enum MatchResult {
-  Win,
-  Loss,
-  Draw,
+  Win = "win",
+  Loss = "loss",
+  Draw = "draw",
 }
 
 export interface Player {
