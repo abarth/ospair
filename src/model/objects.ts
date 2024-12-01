@@ -1,3 +1,4 @@
+export type TournamentId = string;
 export type PlayerId = number;
 export type PlayerName = string;
 export type ClubName = string;
@@ -39,6 +40,7 @@ export interface Round {
 }
 
 export interface Tournament {
+  id: TournamentId;
   name: string;
   matchFormat: MatchFormat;
   players: PlayerId[];
