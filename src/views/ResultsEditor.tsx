@@ -17,6 +17,7 @@ import {
   playerHasDropped,
   setMatchResult,
   selectRound,
+  isCurrentRound,
 } from "../store/tournament-slice";
 import { teamNames } from "../model/objects";
 import PlayerChip from "./PlayerChip";
@@ -29,6 +30,7 @@ export default function ResultsEditor() {
   );
   const dispatch = useAppDispatch();
   const theme = useTheme();
+  const isEditable = isCurrentRound(tournament, roundIndex);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">
@@ -64,7 +66,7 @@ export default function ResultsEditor() {
                             player={player}
                             dropped={hasDropped}
                             onClick={
-                              hasDropped
+                              isEditable && hasDropped
                                 ? () => {
                                     dispatch(
                                       undropPlayer({
@@ -77,7 +79,7 @@ export default function ResultsEditor() {
                                 : undefined
                             }
                             onDelete={
-                              hasDropped
+                              !isEditable || hasDropped
                                 ? undefined
                                 : () => {
                                     dispatch(
@@ -99,6 +101,7 @@ export default function ResultsEditor() {
                       type="number"
                       variant="outlined"
                       size="small"
+                      disabled={!isEditable}
                       value={table.outcome[teamIndex]}
                       onChange={(event) => {
                         const score = parseInt(event.target.value);

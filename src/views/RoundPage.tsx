@@ -1,24 +1,22 @@
-import * as React from "react";
-import Standings from "./Standings";
-import Pairings from "./Pairings";
-import ResultsEditor from "./ResultsEditor";
 import {
   AppBar,
-  Box,
   Button,
+  Pagination,
   Stack,
-  Tab,
   Toolbar,
   Typography,
 } from "@mui/material";
-import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { useNavigate, useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { selectRound, createNextRound } from "../store/tournament-slice";
+import {
+  selectRound,
+  createNextRound,
+  isCurrentRound,
+} from "../store/tournament-slice";
 import { routeTo } from "../routes";
+import RoundBody from "./RoundBody";
 
 export default function RoundPage() {
-  const [tabIndex, setTabIndex] = React.useState("1");
   const { tournament, roundIndex } = useAppSelector(selectRound(useParams()));
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -27,6 +25,7 @@ export default function RoundPage() {
     <Stack direction="row" spacing={2}>
       <Button
         color="inherit"
+        disabled={!isCurrentRound(tournament, roundIndex)}
         onClick={() => {
           dispatch(createNextRound(tournament.id));
           navigate(
@@ -37,7 +36,7 @@ export default function RoundPage() {
           );
         }}
       >
-        Next Round
+        Create Next Round
       </Button>
     </Stack>
   );
@@ -49,29 +48,23 @@ export default function RoundPage() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {tournament.name}: Round {roundIndex + 1}
           </Typography>
+          <Pagination
+            count={tournament.rounds.length}
+            page={roundIndex + 1}
+            color="secondary"
+            onChange={(event, page) =>
+              navigate(
+                routeTo({
+                  tournamentId: tournament.id,
+                  roundIndex: page - 1,
+                }),
+              )
+            }
+          />
           {actions}
         </Toolbar>
       </AppBar>
-      <Box component="main" sx={{ p: 3 }}>
-        <TabContext value={tabIndex}>
-          <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-            <TabList onChange={(event, newValue) => setTabIndex(newValue)}>
-              <Tab label="Standings" value="1" />
-              <Tab label="Pairings" value="2" />
-              <Tab label="Results" value="3" />
-            </TabList>
-          </Box>
-          <TabPanel value="1">
-            <Standings />
-          </TabPanel>
-          <TabPanel value="2">
-            <Pairings />
-          </TabPanel>
-          <TabPanel value="3">
-            <ResultsEditor />
-          </TabPanel>
-        </TabContext>
-      </Box>
+      <RoundBody key={roundIndex} />
     </Stack>
   );
 }
