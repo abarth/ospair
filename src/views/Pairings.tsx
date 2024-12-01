@@ -1,18 +1,15 @@
 import {
   Paper,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { getSeatAssignments } from "../controller/tournament";
 import { playerController } from "../controller/player";
-import { Player, Round } from "../model/objects";
-import PlayerChip from "./PlayerChip";
+import { Round } from "../model/objects";
 import StyledTableRow from "./StyledTableRow";
 
 export default function Pairings({ round }: { round: Round }) {
