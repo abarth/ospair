@@ -1,7 +1,8 @@
 export type TournamentId = string;
-export type PlayerId = number;
+export type PlayerId = string;
 export type PlayerName = string;
 export type ClubName = string;
+export type RoundIndex = number;
 export type TableNumber = number;
 type TeamName = string;
 

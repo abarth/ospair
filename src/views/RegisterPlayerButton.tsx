@@ -8,17 +8,16 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { Tournament } from "../model/objects";
-import { registerPlayer } from "../controller/tournament";
+import { useParams } from "react-router";
+import { useAppDispatch } from "../store/hooks";
+import { nanoid } from "nanoid";
+import { addPlayer } from "../store/player-slice";
+import { registerPlayer } from "../store/tournament-slice";
 
-export default function RegisterPlayerButton({
-  tournament,
-  onTournamentUpdated,
-}: {
-  tournament: Tournament;
-  onTournamentUpdated: (tournament: Tournament) => void;
-}) {
+export default function RegisterPlayerButton() {
   const [open, setOpen] = React.useState(false);
+  const { tournamentId } = useParams();
+  const dispatch = useAppDispatch();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -43,8 +42,17 @@ export default function RegisterPlayerButton({
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries((formData as any).entries());
-            onTournamentUpdated(
-              registerPlayer(tournament, formJson.name, formJson.club),
+            const player = {
+              id: nanoid(),
+              name: formJson.name,
+              club: formJson.club,
+            };
+            dispatch(addPlayer(player));
+            dispatch(
+              registerPlayer({
+                tournamentId: tournamentId!,
+                player: player.id,
+              }),
             );
             handleClose();
           },

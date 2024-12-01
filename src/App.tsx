@@ -1,77 +1,27 @@
 import * as React from "react";
-import { Tournament } from "./model/objects";
-import {
-  createTournament,
-  startRound,
-  hasActivePlayers,
-  hasCurrentRound,
-  hasRegisteredPlayers,
-} from "./controller/tournament";
-import {
-  AppBar,
-  Button,
-  CssBaseline,
-  Stack,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import TournamentManager from "./views/TournamentManager";
+import { CssBaseline } from "@mui/material";
+import { BrowserRouter, Route, Routes } from "react-router";
+import HomePage from "./views/HomePage";
+import TournamentPage from "./views/TournamentPage";
+import RoundPage from "./views/RoundPage";
 
 function App() {
-  const [tournament, setTournament] =
-    React.useState<Tournament>(createTournament);
-
-  let actions;
-  if (hasCurrentRound(tournament)) {
-    actions = (
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="inherit"
-          disabled={!hasActivePlayers(tournament)}
-          onClick={() => setTournament(startRound(tournament))}
-        >
-          Next Round
-        </Button>
-      </Stack>
-    );
-  } else {
-    actions = (
-      <Stack direction="row" spacing={2}>
-        <Button
-          color="inherit"
-          disabled={!hasRegisteredPlayers(tournament)}
-          onClick={() => setTournament(startRound(tournament))}
-        >
-          Start
-        </Button>
-      </Stack>
-    );
-  }
-
-  let title;
-  if (hasCurrentRound(tournament)) {
-    title = `Round ${tournament.rounds.length}`;
-  } else {
-    title = "Lobby";
-  }
-
   return (
     <React.Fragment>
       <CssBaseline />
-      <Stack>
-        <AppBar position="static">
-          <Toolbar>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              {tournament.name}: {title}
-            </Typography>
-            {actions}
-          </Toolbar>
-        </AppBar>
-        <TournamentManager
-          tournament={tournament}
-          onTournamentUpdated={setTournament}
-        />
-      </Stack>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/tournament/:tournamentId"
+            element={<TournamentPage />}
+          />
+          <Route
+            path="/tournament/:tournamentId/round/:roundNumber"
+            element={<RoundPage />}
+          />
+        </Routes>
+      </BrowserRouter>
     </React.Fragment>
   );
 }

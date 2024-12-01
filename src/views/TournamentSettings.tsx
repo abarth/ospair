@@ -8,21 +8,39 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
-import { MatchFormat, Tournament } from "../model/objects";
+import { useParams } from "react-router";
+import { MatchFormat } from "../model/objects";
+import { useAppSelector, useAppDispatch } from "../store/hooks";
+import {
+  selectTournament,
+  setMatchFormat,
+  setTournamentName,
+} from "../store/tournament-slice";
 
-export default function TournamentSettings({
-  tournament,
-  onTournamentUpdated,
-}: {
-  tournament: Tournament;
-  onTournamentUpdated: (tournament: Tournament) => void;
-}) {
-  function handleMatchFormatChange(event: SelectChangeEvent) {
-    onTournamentUpdated({
-      ...tournament,
-      matchFormat: event.target.value as MatchFormat,
-    });
+export default function TournamentSettings() {
+  const tournament = useAppSelector(selectTournament(useParams()));
+  const dispatch = useAppDispatch();
+
+  function handleTournamentNameChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    dispatch(
+      setTournamentName({
+        tournamentId: tournament.id,
+        name: event.target.value,
+      }),
+    );
   }
+
+  function handleMatchFormatChange(event: SelectChangeEvent) {
+    dispatch(
+      setMatchFormat({
+        tournamentId: tournament.id,
+        matchFormat: event.target.value as MatchFormat,
+      }),
+    );
+  }
+
   return (
     <Box component="form" noValidate autoComplete="off">
       <Stack direction="column" spacing={2}>
@@ -32,9 +50,7 @@ export default function TournamentSettings({
           variant="outlined"
           fullWidth
           value={tournament.name}
-          onChange={(event) =>
-            onTournamentUpdated({ ...tournament, name: event.target.value })
-          }
+          onChange={handleTournamentNameChange}
         />
         <FormControl fullWidth>
           <InputLabel id="tournament-match-format-label">

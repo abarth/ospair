@@ -6,27 +6,22 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { PlayerId, Tournament } from "../model/objects";
 import {
-  registerPlayers,
   unregisterPlayer,
   hasRegisteredPlayers,
-} from "../controller/tournament";
+  selectTournament,
+} from "../store/tournament-slice";
 import PlayerImporter from "./PlayerImporter";
 import PlayerChip from "./PlayerChip";
 import TournamentSettings from "./TournamentSettings";
 import RegisterPlayerButton from "./RegisterPlayerButton";
+import { useParams } from "react-router";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 
-export default function Lobby({
-  tournament,
-  onTournamentUpdated,
-}: {
-  tournament: Tournament;
-  onTournamentUpdated: (tournament: Tournament) => void;
-}) {
-  function handlePlayersImported(players: PlayerId[]) {
-    onTournamentUpdated(registerPlayers(tournament, players));
-  }
+export default function Lobby() {
+  const tournament = useAppSelector(selectTournament(useParams()));
+  const dispatch = useAppDispatch();
+
   let players;
   if (hasRegisteredPlayers(tournament)) {
     players = tournament.players.map((player) => (
@@ -34,7 +29,7 @@ export default function Lobby({
         key={player}
         player={player}
         onDelete={() =>
-          onTournamentUpdated(unregisterPlayer(tournament, player))
+          dispatch(unregisterPlayer({ tournamentId: tournament.id, player }))
         }
       />
     ));
@@ -50,16 +45,13 @@ export default function Lobby({
     >
       <Card sx={{ width: 600 }}>
         <CardContent>
-          <TournamentSettings
-            tournament={tournament}
-            onTournamentUpdated={onTournamentUpdated}
-          />
+          <TournamentSettings />
         </CardContent>
       </Card>
       <Card sx={{ width: 600 }}>
         <CardContent>
           <Container>
-            <PlayerImporter onPlayersImported={handlePlayersImported} />
+            <PlayerImporter />
           </Container>
         </CardContent>
       </Card>
@@ -78,10 +70,7 @@ export default function Lobby({
               </Stack>
             </Box>
             <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <RegisterPlayerButton
-                tournament={tournament}
-                onTournamentUpdated={onTournamentUpdated}
-              />
+              <RegisterPlayerButton />
             </Stack>
           </Stack>
         </CardContent>

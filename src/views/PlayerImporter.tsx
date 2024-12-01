@@ -1,29 +1,44 @@
-import { PlayerId } from "../model/objects";
+import { nanoid } from "nanoid";
+import { Player } from "../model/objects";
 import { FileUploader } from "react-drag-drop-files";
 import { parse } from "papaparse";
 import { isRegistration } from "../model/objects";
-import { playerController } from "../controller/player";
 import { PropsWithChildren } from "react";
+import { useAppDispatch } from "../store/hooks";
+import { addPlayers } from "../store/player-slice";
+import { registerPlayers } from "../store/tournament-slice";
+import { useParams } from "react-router";
 
-type PlayerImporterProps = {
-  onPlayersImported: (players: PlayerId[]) => void;
-};
+type PlayerImporterProps = {};
 
 export default function PlayerImporter(
   props: PropsWithChildren<PlayerImporterProps>,
 ) {
+  const { tournamentId } = useParams();
+  const dispatch = useAppDispatch();
+
   const handleChange = (file: File) => {
     parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: function (results, file) {
-        const players: PlayerId[] = [];
+        const players: Player[] = [];
         for (const entry of results.data) {
           if (!isRegistration(entry)) continue;
           let name = entry["First Name"] + " " + entry["Last Name"];
-          players.push(playerController.add(name, entry["Club"]));
+          players.push({
+            id: nanoid(),
+            name: name,
+            club: entry["Club"],
+          });
         }
-        props.onPlayersImported(players);
+        dispatch(addPlayers(players));
+        dispatch(
+          registerPlayers({
+            tournamentId: tournamentId!,
+            players: players.map((player) => player.id),
+          }),
+        );
       },
     });
   };

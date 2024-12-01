@@ -1,6 +1,7 @@
 import { Chip } from "@mui/material";
-import { playerController } from "../controller/player";
 import { PlayerId } from "../model/objects";
+import { useAppSelector } from "../store/hooks";
+import { selectPlayer } from "../store/player-slice";
 
 export default function PlayerChip({
   player,
@@ -13,7 +14,7 @@ export default function PlayerChip({
   onClick?: () => void;
   onDelete?: () => void;
 }) {
-  const playerModel = playerController.getPlayer(player);
+  const playerModel = useAppSelector(selectPlayer(player));
   return (
     <Chip
       label={playerModel.name}

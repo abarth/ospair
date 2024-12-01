@@ -8,10 +8,15 @@ import {
   TableRow,
 } from "@mui/material";
 import StyledTableRow from "./StyledTableRow";
-import { Round } from "../model/objects";
-import { playerController } from "../controller/player";
+import { useAppSelector } from "../store/hooks";
+import { selectPlayers } from "../store/player-slice";
+import { useParams } from "react-router";
+import { selectRound } from "../store/tournament-slice";
 
-export default function Standings({ round }: { round: Round }) {
+export default function Standings() {
+  const { round } = useAppSelector(selectRound(useParams()));
+  const players = useAppSelector(selectPlayers(round.players));
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">
@@ -25,21 +30,17 @@ export default function Standings({ round }: { round: Round }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {round.players.map((player, index) => {
-            const playerModel = playerController.getPlayer(player);
-
-            return (
-              <StyledTableRow key={player}>
-                <TableCell component="th" scope="row">
-                  {index + 1}
-                </TableCell>
-                <TableCell>{playerModel.name}</TableCell>
-                <TableCell align="right">0</TableCell>
-                <TableCell align="right">50%</TableCell>
-                <TableCell align="right">50%</TableCell>
-              </StyledTableRow>
-            );
-          })}
+          {players.map((player, index) => (
+            <StyledTableRow key={player.id}>
+              <TableCell component="th" scope="row">
+                {index + 1}
+              </TableCell>
+              <TableCell>{player.name}</TableCell>
+              <TableCell align="right">0</TableCell>
+              <TableCell align="right">50%</TableCell>
+              <TableCell align="right">50%</TableCell>
+            </StyledTableRow>
+          ))}
         </TableBody>
       </Table>
     </TableContainer>
