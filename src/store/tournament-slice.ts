@@ -278,6 +278,13 @@ function getCurrentRound(tournament: Tournament): Round {
   return tournament.rounds[tournament.rounds.length - 1];
 }
 
+export function isCurrentRound(
+  tournament: Tournament,
+  roundIndex: RoundIndex,
+): boolean {
+  return roundIndex === tournament.rounds.length - 1;
+}
+
 export function hasActivePlayers(tournament: Tournament): boolean {
   const round = getCurrentRound(tournament);
   return round.players.length > round.dropped.length;
