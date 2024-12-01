@@ -3,7 +3,7 @@ import {
   Tournament,
   PlayerId,
   Round,
-  MatchResult,
+  Score,
   TableNumber,
   Table,
   Team,
@@ -135,7 +135,7 @@ export function startRound(tournament: Tournament): Tournament {
     tables.push({
       number: nextTableNumber++,
       teams: teams,
-      results: [],
+      outcome: new Array(teams.length).fill(0),
     });
   }
 
@@ -208,16 +208,19 @@ function updateCurrentRound(
 export function recordMatchResult(
   tournament: Tournament,
   tableNumber: TableNumber,
-  matchResults: MatchResult[],
+  teamIndex: number,
+  score: Score,
 ): Tournament {
   return updateCurrentRound(tournament, (round) => {
     return {
       ...round,
       tables: round.tables.map((table) => {
         if (table.number === tableNumber) {
+          const outcome = [...table.outcome];
+          outcome[teamIndex] = score;
           return {
             ...table,
-            matchResult: matchResults,
+            outcome: outcome,
           };
         } else {
           return table;

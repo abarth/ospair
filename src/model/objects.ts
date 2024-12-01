@@ -9,12 +9,6 @@ export enum MatchFormat {
   TwoHeadedGiant = "two-headed-giant",
 }
 
-export enum MatchResult {
-  Win = "win",
-  Loss = "loss",
-  Draw = "draw",
-}
-
 export interface Player {
   id: PlayerId;
   name: PlayerName;
@@ -24,11 +18,12 @@ export interface Player {
 export const teamNames = ["Team A", "Team B", "Team C"];
 
 export type Team = PlayerId[];
+export type Score = number;
 
 export interface Table {
   number: TableNumber;
   teams: Team[];
-  results: MatchResult[];
+  outcome: Score[];
 }
 
 export interface Seating {
