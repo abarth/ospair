@@ -27,7 +27,7 @@ export default function TournamentSettings({
     <Box component="form" noValidate autoComplete="off">
       <Stack direction="column" spacing={2}>
         <TextField
-          id="outlined-basic"
+          id="tournament-name"
           label="Tournament Name"
           variant="outlined"
           fullWidth

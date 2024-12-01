@@ -235,9 +235,28 @@ export function dropPlayer(
   playerId: PlayerId,
 ): Tournament {
   return updateCurrentRound(tournament, (round) => {
+    if (round.dropped.includes(playerId)) {
+      return round;
+    }
     return {
       ...round,
       dropped: [...round.dropped, playerId],
     };
   });
+}
+
+export function undropPlayer(
+  tournament: Tournament,
+  playerId: PlayerId,
+): Tournament {
+  return updateCurrentRound(tournament, (round) => {
+    return {
+      ...round,
+      dropped: round.dropped.filter((id) => id !== playerId),
+    };
+  });
+}
+
+export function playerHasDropped(round: Round, playerId: PlayerId): boolean {
+  return round.dropped.includes(playerId);
 }
