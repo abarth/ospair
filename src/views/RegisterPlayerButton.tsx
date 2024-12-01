@@ -31,7 +31,7 @@ export default function RegisterPlayerButton({
   return (
     <React.Fragment>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Register Player
+        Add Player
       </Button>
       <Dialog
         open={open}

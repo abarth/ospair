@@ -11,12 +11,14 @@ import {
   PlayerName,
   Seating,
   teamNames,
+  MatchFormat,
 } from "../model/objects";
 import { playerController } from "./player";
 
 export function createTournament(): Tournament {
   return {
     name: "Untitled Tournament",
+    matchFormat: MatchFormat.SinglePlayer,
     players: [],
     rounds: [],
   };
@@ -33,6 +35,24 @@ export function hasRegisteredPlayers(tournament: Tournament): boolean {
 export function hasActivePlayers(tournament: Tournament): boolean {
   const round = getCurrentRound(tournament);
   return round.players.length > round.dropped.length;
+}
+
+export function getPlayersPerTeam(matchFormat: MatchFormat): number {
+  switch (matchFormat) {
+    case MatchFormat.SinglePlayer:
+      return 1;
+    case MatchFormat.TwoHeadedGiant:
+      return 2;
+  }
+}
+
+export function getMaxPlayersPerTable(matchFormat: MatchFormat): number {
+  switch (matchFormat) {
+    case MatchFormat.SinglePlayer:
+      return 2;
+    case MatchFormat.TwoHeadedGiant:
+      return 4;
+  }
 }
 
 export function getSeatAssignments(round: Round): Map<PlayerId, Seating> {
@@ -119,19 +139,40 @@ export function startRound(tournament: Tournament): Tournament {
     });
   }
 
-  const tableCount = Math.ceil(players.length / 2);
+  const maxPlayersPerTable = getMaxPlayersPerTable(tournament.matchFormat);
+
+  const tableCount = Math.ceil(players.length / maxPlayersPerTable);
   for (let i = 0; i < tableCount; i++) {
-    const base = i * 2;
-    const assignedPlayers = players.slice(base, base + 2);
-    switch (assignedPlayers.length) {
-      case 1:
-        seat([[assignedPlayers[0]]]);
+    const base = i * maxPlayersPerTable;
+    const assignedPlayers = players.slice(base, base + maxPlayersPerTable);
+    switch (tournament.matchFormat) {
+      case MatchFormat.SinglePlayer:
+        seat(assignedPlayers.map((player) => [player]));
         break;
-      case 2:
-        seat([[assignedPlayers[0]], [assignedPlayers[1]]]);
+      case MatchFormat.TwoHeadedGiant:
+        // If there are 5 people left, we should pair them as 3 and 2. Currently, we pair them as 4 and give the last player a bye.
+        // If there are 6 people left, we should pair them as 3 and 3. Currently, we pair them as 4 and 2.
+        switch (assignedPlayers.length) {
+          case 1:
+            seat([[assignedPlayers[0]]]);
+            break;
+          case 2:
+            seat([[assignedPlayers[0]], [assignedPlayers[1]]]);
+            break;
+          case 3:
+            seat([
+              [assignedPlayers[0]],
+              [assignedPlayers[1]],
+              [assignedPlayers[2]],
+            ]);
+            break;
+          case 4:
+            seat([assignedPlayers.slice(0, 2), assignedPlayers.slice(2, 4)]);
+            break;
+          default:
+            throw new Error("Invalid number of players");
+        }
         break;
-      default:
-        continue;
     }
   }
 

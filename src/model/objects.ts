@@ -4,6 +4,11 @@ export type ClubName = string;
 export type TableNumber = number;
 type TeamName = string;
 
+export enum MatchFormat {
+  SinglePlayer = "single-player",
+  TwoHeadedGiant = "two-headed-giant",
+}
+
 export enum MatchResult {
   Win = "win",
   Loss = "loss",
@@ -40,6 +45,7 @@ export interface Round {
 
 export interface Tournament {
   name: string;
+  matchFormat: MatchFormat;
   players: PlayerId[];
   rounds: Round[];
 }
