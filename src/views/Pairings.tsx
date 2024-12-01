@@ -7,15 +7,19 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { getSeatAssignments } from "../controller/tournament";
-import { playerController } from "../controller/player";
-import { Round } from "../model/objects";
+import { useParams } from "react-router";
+import { useAppSelector } from "../store/hooks";
+import { selectPlayers } from "../store/player-slice";
+import { getSeatAssignments, selectRound } from "../store/tournament-slice";
 import StyledTableRow from "./StyledTableRow";
 
-export default function Pairings({ round }: { round: Round }) {
-  const seatings = getSeatAssignments(round);
-  const players = playerController.getPlayers(round.players);
+export default function Pairings() {
+  const { round } = useAppSelector(selectRound(useParams()));
+  const players = useAppSelector(selectPlayers(round.players));
+
   players.sort((a, b) => a.name.localeCompare(b.name));
+  const seatings = getSeatAssignments(round);
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">

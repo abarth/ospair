@@ -14,21 +14,20 @@ import { SxProps, useTheme } from "@mui/material/styles";
 import {
   dropPlayer,
   undropPlayer,
-  getCurrentRound,
   playerHasDropped,
-  recordMatchResult,
-} from "../controller/tournament";
-import { Tournament, teamNames } from "../model/objects";
+  setMatchResult,
+  selectRound,
+} from "../store/tournament-slice";
+import { teamNames } from "../model/objects";
 import PlayerChip from "./PlayerChip";
+import { useParams } from "react-router";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 
-export default function ResultsEditor({
-  tournament,
-  onTournamentUpdated,
-}: {
-  tournament: Tournament;
-  onTournamentUpdated: (tournament: Tournament) => void;
-}) {
-  const round = getCurrentRound(tournament);
+export default function ResultsEditor() {
+  const { tournament, roundIndex, round } = useAppSelector(
+    selectRound(useParams()),
+  );
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   return (
     <TableContainer component={Paper}>
@@ -67,8 +66,12 @@ export default function ResultsEditor({
                             onClick={
                               hasDropped
                                 ? () => {
-                                    onTournamentUpdated(
-                                      undropPlayer(tournament, player),
+                                    dispatch(
+                                      undropPlayer({
+                                        tournamentId: tournament.id,
+                                        roundIndex,
+                                        player,
+                                      }),
                                     );
                                   }
                                 : undefined
@@ -77,8 +80,12 @@ export default function ResultsEditor({
                               hasDropped
                                 ? undefined
                                 : () => {
-                                    onTournamentUpdated(
-                                      dropPlayer(tournament, player),
+                                    dispatch(
+                                      dropPlayer({
+                                        tournamentId: tournament.id,
+                                        roundIndex,
+                                        player,
+                                      }),
                                     );
                                   }
                             }
@@ -95,13 +102,14 @@ export default function ResultsEditor({
                       value={table.outcome[teamIndex]}
                       onChange={(event) => {
                         const score = parseInt(event.target.value);
-                        onTournamentUpdated(
-                          recordMatchResult(
-                            tournament,
-                            table.number,
+                        dispatch(
+                          setMatchResult({
+                            tournamentId: tournament.id,
+                            roundIndex,
+                            tableNumber: table.number,
                             teamIndex,
                             score,
-                          ),
+                          }),
                         );
                       }}
                     />
