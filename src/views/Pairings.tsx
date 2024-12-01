@@ -31,10 +31,10 @@ export default function Pairings({ round }: { round: Round }) {
             const seating = seatings.get(player.id)!;
             return (
               <StyledTableRow key={player.id}>
-                <TableCell>{seating.number}</TableCell>
                 <TableCell component="th" scope="row">
-                  {player.name}
+                  {seating.number}
                 </TableCell>
+                <TableCell>{player.name}</TableCell>
                 <TableCell>{seating.team ?? "Bye"}</TableCell>
               </StyledTableRow>
             );

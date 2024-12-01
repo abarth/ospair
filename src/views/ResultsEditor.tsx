@@ -1,5 +1,16 @@
-import { Typography } from "@mui/material";
+import * as React from "react";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { getCurrentRound } from "../controller/tournament";
 import { Tournament } from "../model/objects";
+import StyledTableRow from "./StyledTableRow";
 
 export default function ResultsEditor({
   tournament,
@@ -8,5 +19,27 @@ export default function ResultsEditor({
   tournament: Tournament;
   onTournamentUpdated: (tournament: Tournament) => void;
 }) {
-  return <Typography>ResultsEditor</Typography>;
+  const round = getCurrentRound(tournament);
+  return (
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Table</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {round.tables.map((table) => {
+            return (
+              <StyledTableRow key={table.number}>
+                <TableCell component="th" scope="row">
+                  {table.number}
+                </TableCell>
+              </StyledTableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
 }
