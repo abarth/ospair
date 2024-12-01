@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { shuffle } from "../base/math";
 import {
   Tournament,
@@ -17,6 +18,7 @@ import { playerController } from "./player";
 
 export function createTournament(): Tournament {
   return {
+    id: nanoid(),
     name: "Untitled Tournament",
     matchFormat: MatchFormat.SinglePlayer,
     players: [],
