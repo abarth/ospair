@@ -11,7 +11,13 @@ import {
   TextField,
 } from "@mui/material";
 import { SxProps, useTheme } from "@mui/material/styles";
-import { getCurrentRound, recordMatchResult } from "../controller/tournament";
+import {
+  dropPlayer,
+  undropPlayer,
+  getCurrentRound,
+  playerHasDropped,
+  recordMatchResult,
+} from "../controller/tournament";
 import { Tournament, teamNames } from "../model/objects";
 import PlayerChip from "./PlayerChip";
 
@@ -52,9 +58,33 @@ export default function ResultsEditor({
                   </TableCell>
                   <TableCell>
                     <Stack direction="row" spacing={1}>
-                      {players.map((player) => (
-                        <PlayerChip player={player} />
-                      ))}
+                      {players.map((player) => {
+                        const hasDropped = playerHasDropped(round, player);
+                        return (
+                          <PlayerChip
+                            player={player}
+                            dropped={hasDropped}
+                            onClick={
+                              hasDropped
+                                ? () => {
+                                    onTournamentUpdated(
+                                      undropPlayer(tournament, player),
+                                    );
+                                  }
+                                : undefined
+                            }
+                            onDelete={
+                              hasDropped
+                                ? undefined
+                                : () => {
+                                    onTournamentUpdated(
+                                      dropPlayer(tournament, player),
+                                    );
+                                  }
+                            }
+                          />
+                        );
+                      })}
                     </Stack>
                   </TableCell>
                   <TableCell>
