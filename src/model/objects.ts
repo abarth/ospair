@@ -46,6 +46,7 @@ export interface Tournament {
   matchFormat: MatchFormat;
   players: PlayerId[];
   rounds: Round[];
+  deleted?: boolean;
 }
 
 export interface Registration {

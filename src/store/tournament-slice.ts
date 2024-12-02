@@ -65,6 +65,14 @@ export const tournamentSlice = createSlice({
       };
       state.registry[tournament.id] = tournament;
     },
+    deleteTournament: (state, action: PayloadAction<TournamentId>) => {
+      const tournament = getTournament(state, action.payload);
+      tournament.deleted = true;
+    },
+    undeleteTournament: (state, action: PayloadAction<TournamentId>) => {
+      const tournament = getTournament(state, action.payload);
+      delete tournament.deleted;
+    },
     registerPlayer: (
       state,
       action: PayloadAction<{ tournamentId: TournamentId; player: PlayerId }>,
@@ -233,6 +241,8 @@ export const tournamentSlice = createSlice({
 
 export const {
   createTournament,
+  deleteTournament,
+  undeleteTournament,
   registerPlayer,
   registerPlayers,
   unregisterPlayer,
@@ -245,7 +255,8 @@ export const {
 } = tournamentSlice.actions;
 
 export function selectAllTournaments(state: RootState): Tournament[] {
-  return Object.values(state.tournament.registry) as Tournament[];
+  const tournaments = Object.values(state.tournament.registry) as Tournament[];
+  return tournaments.filter((tournament) => !tournament.deleted);
 }
 
 export function selectTournament(params: {
