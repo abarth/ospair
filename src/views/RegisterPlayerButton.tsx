@@ -14,7 +14,11 @@ import { nanoid } from "nanoid";
 import { addPlayer } from "../store/player-slice";
 import { registerPlayer } from "../store/tournament-slice";
 
-export default function RegisterPlayerButton() {
+export default function RegisterPlayerButton({
+  disabled,
+}: {
+  disabled?: boolean;
+}) {
   const [open, setOpen] = React.useState(false);
   const { tournamentId } = useParams();
   const dispatch = useAppDispatch();
@@ -29,7 +33,7 @@ export default function RegisterPlayerButton() {
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button variant="outlined" disabled={disabled} onClick={handleClickOpen}>
         Add Player
       </Button>
       <Dialog

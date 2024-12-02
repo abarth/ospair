@@ -1,11 +1,4 @@
-import {
-  AppBar,
-  Button,
-  Pagination,
-  Stack,
-  Toolbar,
-  Typography,
-} from "@mui/material";
+import { AppBar, Button, Stack, Toolbar, Typography } from "@mui/material";
 import { useNavigate, useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -16,6 +9,7 @@ import {
 import { routeTo } from "../routes";
 import RoundBody from "./RoundBody";
 import DrawerButton from "./DrawerButton";
+import RoundSelector from "./RoundSelector";
 
 export default function RoundPage() {
   const { tournament, roundIndex } = useAppSelector(selectRound(useParams()));
@@ -50,19 +44,7 @@ export default function RoundPage() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {tournament.name}: Round {roundIndex + 1}
           </Typography>
-          <Pagination
-            count={tournament.rounds.length}
-            page={roundIndex + 1}
-            color="secondary"
-            onChange={(event, page) =>
-              navigate(
-                routeTo({
-                  tournamentId: tournament.id,
-                  roundIndex: page - 1,
-                }),
-              )
-            }
-          />
+          <RoundSelector />
           {actions}
         </Toolbar>
       </AppBar>

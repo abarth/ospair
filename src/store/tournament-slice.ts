@@ -263,7 +263,7 @@ export function selectRound(params: {
   };
 }
 
-export function hasCurrentRound(tournament: Tournament): boolean {
+export function hasStarted(tournament: Tournament): boolean {
   return tournament.rounds.length > 0;
 }
 
@@ -327,4 +327,11 @@ export function getSeatAssignments(round: Round): Map<PlayerId, Seating> {
 
 export function playerHasDropped(round: Round, player: PlayerId): boolean {
   return round.dropped.includes(player);
+}
+
+export function playerHasDroppedFromTournament(
+  tournament: Tournament,
+  player: PlayerId,
+): boolean {
+  return tournament.rounds.some((round) => playerHasDropped(round, player));
 }
