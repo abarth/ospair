@@ -5,10 +5,6 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
 } from "@mui/material";
@@ -17,7 +13,6 @@ import { nanoid } from "nanoid";
 import { createTournament } from "../store/tournament-slice";
 import { useNavigate } from "react-router";
 import { routeTo } from "../routes";
-import { MatchFormat } from "../model/objects";
 
 export default function CreateTournamentButton() {
   const [open, setOpen] = React.useState(false);
@@ -71,24 +66,6 @@ export default function CreateTournamentButton() {
               label="Name"
               fullWidth
             />
-            <FormControl fullWidth>
-              <InputLabel id="tournament-match-format-label">
-                Match Format
-              </InputLabel>
-              <Select
-                labelId="tournament-match-format-label"
-                id="tournament-match-format"
-                defaultValue={MatchFormat.SinglePlayer}
-                label="Match Format"
-              >
-                <MenuItem value={MatchFormat.SinglePlayer}>
-                  Single Player
-                </MenuItem>
-                <MenuItem value={MatchFormat.TwoHeadedGiant}>
-                  Two-Headed Giant
-                </MenuItem>
-              </Select>
-            </FormControl>
           </Stack>
         </DialogContent>
         <DialogActions>
