@@ -15,6 +15,15 @@ import { useNavigate } from "react-router";
 export default function TournamentListItems() {
   const tournaments = useAppSelector(selectAllTournaments);
   const navigate = useNavigate();
+
+  if (tournaments.length === 0) {
+    return (
+      <React.Fragment>
+        <ListSubheader>No Tournaments</ListSubheader>
+      </React.Fragment>
+    );
+  }
+
   return (
     <React.Fragment>
       <ListSubheader>Tournaments</ListSubheader>

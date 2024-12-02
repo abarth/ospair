@@ -10,7 +10,7 @@ export default function HomePage() {
         <Toolbar>
           <DrawerButton />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Old School Tournament Manager
+            Tournament Manager
           </Typography>
           <CreateTournamentButton />
         </Toolbar>
