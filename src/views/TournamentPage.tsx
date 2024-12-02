@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardContent,
+  List,
   Stack,
   Toolbar,
   Typography,
@@ -20,6 +21,7 @@ import { routeTo } from "../routes";
 import DrawerButton from "./DrawerButton";
 import PlayerRegistration from "./PlayerRegistration";
 import TournamentSettings from "./TournamentSettings";
+import RoundListItems from "./RoundListItems";
 
 export default function TournamentPage() {
   const tournament = useAppSelector(selectTournament(useParams()));
@@ -39,13 +41,41 @@ export default function TournamentPage() {
     );
   }
 
+  let trailingContent;
+  if (hasStarted(tournament)) {
+    trailingContent = (
+      <Card sx={{ width: 600 }}>
+        <CardContent>
+          <Typography variant="h6">Rounds</Typography>
+          <List>
+            <RoundListItems />
+          </List>
+        </CardContent>
+      </Card>
+    );
+  } else {
+    trailingContent = (
+      <Box sx={{ width: 600 }}>
+        <Stack direction="row" spacing={2} justifyContent="flex-end">
+          <Button
+            variant="outlined"
+            disabled={!canStartTournament}
+            onClick={handleStartTournament}
+          >
+            Start Tournament
+          </Button>
+        </Stack>
+      </Box>
+    );
+  }
+
   return (
     <Stack>
       <AppBar position="static">
         <Toolbar>
           <DrawerButton />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {tournament.name}: Settings
+            {tournament.name}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -66,17 +96,7 @@ export default function TournamentPage() {
               <PlayerRegistration />
             </CardContent>
           </Card>
-          <Box sx={{ width: 600 }}>
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button
-                variant="outlined"
-                disabled={!canStartTournament}
-                onClick={handleStartTournament}
-              >
-                Start Tournament
-              </Button>
-            </Stack>
-          </Box>
+          {trailingContent}
         </Stack>
       </Box>
     </Stack>

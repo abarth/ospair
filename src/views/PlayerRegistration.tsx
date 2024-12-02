@@ -18,39 +18,51 @@ export default function PlayerRegistration() {
 
   const canRegisterPlayers = !hasStarted(tournament);
 
-  let players;
+  let playerList;
   if (hasRegisteredPlayers(tournament)) {
-    players = tournament.players.map((player) => {
-      const dropped = playerHasDroppedFromTournament(tournament, player);
-      return (
-        <PlayerChip
-          key={player}
-          player={player}
-          dropped={dropped}
-          onDelete={
-            canRegisterPlayers
-              ? () =>
-                  dispatch(
-                    unregisterPlayer({ tournamentId: tournament.id, player }),
-                  )
-              : undefined
-          }
-        />
-      );
-    });
-  } else {
-    players = <Typography>No players registered</Typography>;
+    playerList = (
+      <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
+        {tournament.players.map((player) => {
+          const dropped = playerHasDroppedFromTournament(tournament, player);
+          return (
+            <PlayerChip
+              key={player}
+              player={player}
+              dropped={dropped}
+              onDelete={
+                canRegisterPlayers
+                  ? () =>
+                      dispatch(
+                        unregisterPlayer({
+                          tournamentId: tournament.id,
+                          player,
+                        }),
+                      )
+                  : undefined
+              }
+            />
+          );
+        })}
+      </Stack>
+    );
   }
+
+  let registerPlayerButton;
+  if (canRegisterPlayers) {
+    registerPlayerButton = (
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <PlayerImporter />
+        <Typography>or</Typography>
+        <RegisterPlayerButton disabled={!canRegisterPlayers} />
+      </Stack>
+    );
+  }
+
   return (
     <Stack spacing={2}>
       <Typography variant="h6">Players</Typography>
-      {canRegisterPlayers ? <PlayerImporter /> : null}
-      <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
-        {players}
-      </Stack>
-      <Stack direction="row" spacing={2} justifyContent="flex-end">
-        <RegisterPlayerButton disabled={!canRegisterPlayers} />
-      </Stack>
+      {playerList}
+      {registerPlayerButton}
     </Stack>
   );
 }

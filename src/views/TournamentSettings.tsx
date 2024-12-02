@@ -7,6 +7,7 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useParams } from "react-router";
 import { MatchFormat } from "../model/objects";
@@ -45,6 +46,7 @@ export default function TournamentSettings() {
   return (
     <Box component="form" noValidate autoComplete="off">
       <Stack direction="column" spacing={2}>
+        <Typography variant="h6">Settings</Typography>
         <TextField
           id="tournament-name"
           label="Tournament Name"
