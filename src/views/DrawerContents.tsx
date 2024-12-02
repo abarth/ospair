@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import React from "react";
 import HomeIcon from "@mui/icons-material/Home";
-import FactoryIcon from "@mui/icons-material/Factory";
+import AnalyticsIcon from "@mui/icons-material/Analytics";
 import { useNavigate, useParams } from "react-router";
 import { useAppSelector } from "../store/hooks";
 import { selectTournament } from "../store/tournament-slice";
@@ -24,14 +24,14 @@ function TournamentDrawerSection() {
   return (
     <React.Fragment>
       <ListSubheader>{tournament.name}</ListSubheader>
-      <ListItem disablePadding key="home">
+      <ListItem disablePadding key="overview">
         <ListItemButton
           onClick={() => navigate(routeTo({ tournamentId: tournament.id }))}
         >
           <ListItemIcon>
-            <HomeIcon />
+            <AnalyticsIcon />
           </ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText primary="Overview" />
         </ListItemButton>
       </ListItem>
       <RoundListItems />
@@ -46,12 +46,12 @@ export default function DrawerContent({ onClose }: { onClose: () => void }) {
   return (
     <Box sx={{ width: 250 }} role="presentation" onClick={onClose}>
       <List>
-        <ListItem disablePadding key="tournaments">
+        <ListItem disablePadding key="home">
           <ListItemButton onClick={() => navigate(routeTo({}))}>
             <ListItemIcon>
-              <FactoryIcon />
+              <HomeIcon />
             </ListItemIcon>
-            <ListItemText primary="Tournaments" />
+            <ListItemText primary="Home" />
           </ListItemButton>
         </ListItem>
         {tournamentId ? <TournamentDrawerSection /> : null}
