@@ -9,6 +9,7 @@ import {
   createNextRound,
 } from "../store/tournament-slice";
 import { routeTo } from "../routes";
+import DrawerButton from "./DrawerButton";
 
 export default function TournamentPage() {
   const tournament = useAppSelector(selectTournament(useParams()));
@@ -41,6 +42,7 @@ export default function TournamentPage() {
     <Stack>
       <AppBar position="static">
         <Toolbar>
+          <DrawerButton />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {tournament.name}: Lobby
           </Typography>

@@ -15,6 +15,7 @@ import {
 } from "../store/tournament-slice";
 import { routeTo } from "../routes";
 import RoundBody from "./RoundBody";
+import DrawerButton from "./DrawerButton";
 
 export default function RoundPage() {
   const { tournament, roundIndex } = useAppSelector(selectRound(useParams()));
@@ -45,6 +46,7 @@ export default function RoundPage() {
     <Stack>
       <AppBar position="static">
         <Toolbar>
+          <DrawerButton />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {tournament.name}: Round {roundIndex + 1}
           </Typography>

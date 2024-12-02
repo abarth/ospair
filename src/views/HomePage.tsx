@@ -4,6 +4,7 @@ import { useAppDispatch } from "../store/hooks";
 import { createTournament } from "../store/tournament-slice";
 import { useNavigate } from "react-router";
 import { routeTo } from "../routes";
+import DrawerButton from "./DrawerButton";
 
 export default function HomePage() {
   const dispatch = useAppDispatch();
@@ -13,6 +14,7 @@ export default function HomePage() {
     <Stack>
       <AppBar position="static">
         <Toolbar>
+          <DrawerButton />
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Old School Tournament Manager
           </Typography>
