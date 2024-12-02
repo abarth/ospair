@@ -34,7 +34,7 @@ export default function CreateTournamentButton() {
 
   return (
     <React.Fragment>
-      <Button variant="contained" onClick={handleOpen}>
+      <Button variant="outlined" color="inherit" onClick={handleOpen}>
         Create Tournament
       </Button>
       <Dialog

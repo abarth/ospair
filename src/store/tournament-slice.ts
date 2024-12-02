@@ -240,6 +240,10 @@ export const {
   undropPlayer,
 } = tournamentSlice.actions;
 
+export function selectAllTournaments(state: RootState): Tournament[] {
+  return Object.values(state.tournament.registry) as Tournament[];
+}
+
 export function selectTournament(params: {
   tournamentId?: TournamentId;
 }): (state: RootState) => Tournament {

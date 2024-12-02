@@ -1,6 +1,7 @@
-import { AppBar, Box, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, List, Stack, Toolbar, Typography } from "@mui/material";
 import DrawerButton from "./DrawerButton";
 import CreateTournamentButton from "./CreateTournamentButton";
+import TournamentListItems from "./TournamentListItems";
 
 export default function HomePage() {
   return (
@@ -11,11 +12,12 @@ export default function HomePage() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Old School Tournament Manager
           </Typography>
+          <CreateTournamentButton />
         </Toolbar>
       </AppBar>
-      <Box component="main" sx={{ p: 3 }}>
-        <CreateTournamentButton />
-      </Box>
+      <List>
+        <TournamentListItems />
+      </List>
     </Stack>
   );
 }
