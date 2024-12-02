@@ -12,6 +12,7 @@ import { useParams } from "react-router";
 import { MatchFormat } from "../model/objects";
 import { useAppSelector, useAppDispatch } from "../store/hooks";
 import {
+  hasStarted,
   selectTournament,
   setMatchFormat,
   setTournamentName,
@@ -59,6 +60,7 @@ export default function TournamentSettings() {
           <Select
             labelId="tournament-match-format-label"
             id="tournament-match-format"
+            disabled={hasStarted(tournament)}
             value={tournament.matchFormat}
             label="Match Format"
             onChange={handleMatchFormatChange}
