@@ -22,6 +22,7 @@ import DrawerButton from "./DrawerButton";
 import PlayerRegistration from "./PlayerRegistration";
 import TournamentSettings from "./TournamentSettings";
 import RoundListItems from "./RoundListItems";
+import DeleteTournamentButton from "./DeleteTournamentButton";
 
 export default function TournamentPage() {
   const tournament = useAppSelector(selectTournament(useParams()));
@@ -77,6 +78,7 @@ export default function TournamentPage() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {tournament.name}
           </Typography>
+          <DeleteTournamentButton />
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 3 }}>
