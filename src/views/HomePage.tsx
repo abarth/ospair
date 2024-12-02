@@ -1,15 +1,8 @@
-import { nanoid } from "nanoid";
-import { AppBar, Box, Button, Stack, Toolbar, Typography } from "@mui/material";
-import { useAppDispatch } from "../store/hooks";
-import { createTournament } from "../store/tournament-slice";
-import { useNavigate } from "react-router";
-import { routeTo } from "../routes";
+import { AppBar, Box, Stack, Toolbar, Typography } from "@mui/material";
 import DrawerButton from "./DrawerButton";
+import CreateTournamentButton from "./CreateTournamentButton";
 
 export default function HomePage() {
-  const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-
   return (
     <Stack>
       <AppBar position="static">
@@ -21,17 +14,7 @@ export default function HomePage() {
         </Toolbar>
       </AppBar>
       <Box component="main" sx={{ p: 3 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => {
-            const tournamentId = nanoid();
-            dispatch(createTournament({ tournamentId }));
-            navigate(routeTo({ tournamentId: tournamentId }));
-          }}
-        >
-          Create Tournament
-        </Button>
+        <CreateTournamentButton />
       </Box>
     </Stack>
   );

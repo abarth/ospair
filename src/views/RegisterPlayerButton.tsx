@@ -23,17 +23,17 @@ export default function RegisterPlayerButton({
   const { tournamentId } = useParams();
   const dispatch = useAppDispatch();
 
-  const handleClickOpen = () => {
+  function handleOpen() {
     setOpen(true);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setOpen(false);
-  };
+  }
 
   return (
     <React.Fragment>
-      <Button variant="outlined" disabled={disabled} onClick={handleClickOpen}>
+      <Button variant="outlined" disabled={disabled} onClick={handleOpen}>
         Add Player
       </Button>
       <Dialog

@@ -50,11 +50,11 @@ export const tournamentSlice = createSlice({
   reducers: {
     createTournament: (
       state,
-      action: PayloadAction<{ tournamentId: TournamentId }>,
+      action: PayloadAction<{ tournamentId: TournamentId; name: string }>,
     ) => {
       const tournament = {
         id: action.payload.tournamentId,
-        name: "Untitled Tournament",
+        name: action.payload.name,
         matchFormat: MatchFormat.SinglePlayer,
         players: [],
         rounds: [],
