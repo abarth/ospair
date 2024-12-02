@@ -46,12 +46,12 @@ export default function DrawerContent({ onClose }: { onClose: () => void }) {
   return (
     <Box sx={{ width: 250 }} role="presentation" onClick={onClose}>
       <List>
-        <ListItem disablePadding key="manager">
+        <ListItem disablePadding key="tournaments">
           <ListItemButton onClick={() => navigate(routeTo({}))}>
             <ListItemIcon>
               <FactoryIcon />
             </ListItemIcon>
-            <ListItemText primary="Mananger" />
+            <ListItemText primary="Tournaments" />
           </ListItemButton>
         </ListItem>
         {tournamentId ? <TournamentDrawerSection /> : null}
