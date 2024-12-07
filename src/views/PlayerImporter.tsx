@@ -25,7 +25,7 @@ export default function PlayerImporter(
         const players: Player[] = [];
         for (const entry of results.data) {
           if (!isRegistration(entry)) continue;
-          let name = entry["First Name"] + " " + entry["Last Name"];
+          let name = [entry["First Name"], entry["Last Name"]].join(" ");
           players.push({
             id: nanoid(),
             name: name,
