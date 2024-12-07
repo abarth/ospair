@@ -15,7 +15,9 @@ import StyledTableRow from "./StyledTableRow";
 
 export default function Pairings() {
   const { round } = useAppSelector(selectRound(useParams()));
-  const players = useAppSelector(selectPlayers(round.players));
+  const players = Array.from(
+    useAppSelector(selectPlayers(round.players)).values(),
+  );
 
   players.sort((a, b) => a.name.localeCompare(b.name));
   const seatings = getSeatAssignments(round);

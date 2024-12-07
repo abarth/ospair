@@ -31,6 +31,7 @@ export default function ResultsEditor() {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const isEditable = isCurrentRound(tournament, roundIndex);
+  // TODO: Be sure to show players who have byes so they can be dropped.
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">
@@ -102,16 +103,16 @@ export default function ResultsEditor() {
                       variant="outlined"
                       size="small"
                       disabled={!isEditable}
-                      value={table.outcome[teamIndex]}
+                      value={table.wins[teamIndex]}
                       onChange={(event) => {
-                        const score = parseInt(event.target.value);
+                        const wins = parseInt(event.target.value);
                         dispatch(
                           setMatchResult({
                             tournamentId: tournament.id,
                             roundIndex,
                             tableNumber: table.number,
                             teamIndex,
-                            score,
+                            wins,
                           }),
                         );
                       }}

@@ -5,3 +5,11 @@ export function shuffle<T>(array: T[]): void {
     [array[i], array[j]] = [array[j], array[i]];
   }
 }
+
+export function sum(values: number[]): number {
+  return values.reduce((sum, value) => sum + value, 0);
+}
+
+export function average(values: number[]): number {
+  return sum(values) / values.length;
+}

@@ -12,7 +12,7 @@ const rootReducer = combineReducers({
 const reducer = persistReducer(
   {
     key: "root",
-    version: 1,
+    version: 2,
     storage: localForage,
   },
   rootReducer,
