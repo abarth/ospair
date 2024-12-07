@@ -40,9 +40,11 @@ export interface Table {
 }
 
 export interface Seating {
-  number: TableNumber;
+  tableNumber: TableNumber;
   // If a player does not have a team, the player has a bye.
-  team?: TeamName;
+  teamName?: TeamName;
+  allies: Team;
+  opposingTeams: Team[];
 }
 
 export interface Round {
