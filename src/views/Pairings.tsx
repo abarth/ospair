@@ -27,34 +27,32 @@ export default function Pairings() {
       <Table sx={{ minWidth: 650 }} size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Table</TableCell>
+            <TableCell align="right">Table</TableCell>
             <TableCell>Players</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {players.map((player) => {
             const seating = seatings.get(player)!;
+            const isBye = seating.opposingTeams.length === 0;
             return (
               <StyledTableRow key={player}>
-                <TableCell>{seating.tableNumber}</TableCell>
+                <TableCell align="right">
+                  {isBye ? "Bye" : seating.tableNumber}
+                </TableCell>
                 <TableCell>
                   <TeamRoster team={seating.allies} lead={player} />
-                  {seating.opposingTeams.length > 0 ? (
-                    seating.opposingTeams.map((opposingTeam, index) => (
-                      <>
-                        {" "}
-                        <i>{"vs"}</i>{" "}
-                        {seating.opposingTeams.map((opposingTeam, index) => (
-                          <TeamRoster key={index} team={opposingTeam} />
-                        ))}
-                      </>
-                    ))
-                  ) : (
-                    <>
-                      {" "}
-                      <i>(Bye)</i>
-                    </>
-                  )}
+                  {isBye
+                    ? null
+                    : seating.opposingTeams.map((opposingTeam, index) => (
+                        <>
+                          {" "}
+                          <i>{"vs"}</i>{" "}
+                          {seating.opposingTeams.map((opposingTeam, index) => (
+                            <TeamRoster key={index} team={opposingTeam} />
+                          ))}
+                        </>
+                      ))}
                 </TableCell>
               </StyledTableRow>
             );
