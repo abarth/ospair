@@ -48,7 +48,7 @@ export default function ResultsEditor() {
                 <TableCell>{teamNames[teamIndex]}</TableCell>
               </React.Fragment>
             ))}
-            <TableCell>Draws</TableCell>
+            <TableCell align="right">Draws</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -140,7 +140,7 @@ export default function ResultsEditor() {
                     </React.Fragment>
                   );
                 })}
-                <TableCell>
+                <TableCell align="right">
                   {isBye ? null : (
                     <Select
                       variant="outlined"
