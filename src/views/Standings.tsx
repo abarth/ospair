@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import StyledTableRow from "./StyledTableRow";
 import { useAppSelector } from "../store/hooks";
-import { selectPlayers } from "../store/player-slice";
+import { getPlayerMap, selectPlayers } from "../store/player-slice";
 import { useParams } from "react-router";
 import { selectRound } from "../store/tournament-slice";
 import { getTournamentHistoryBeforeRound } from "../model/tournament";
@@ -18,8 +18,7 @@ export default function Standings() {
   const { tournament, roundIndex, round } = useAppSelector(
     selectRound(useParams()),
   );
-  const players = useAppSelector(selectPlayers(round.players));
-
+  const players = getPlayerMap(useAppSelector(selectPlayers(round.players)));
   const history = getTournamentHistoryBeforeRound(tournament, roundIndex);
 
   return (

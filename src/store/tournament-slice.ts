@@ -253,8 +253,10 @@ export function getSeatAssignments(round: Round): Map<PlayerId, Seating> {
     for (const [teamIndex, team] of table.teams.entries()) {
       for (const playerId of team) {
         seatings.set(playerId, {
-          number: table.number,
-          team: table.teams.length === 1 ? undefined : teamNames[teamIndex],
+          tableNumber: table.number,
+          teamName: table.teams.length === 1 ? undefined : teamNames[teamIndex],
+          allies: team,
+          opposingTeams: table.teams.filter((_, i) => i !== teamIndex),
         });
       }
     }

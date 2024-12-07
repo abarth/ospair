@@ -38,16 +38,14 @@ export function selectPlayer(player: PlayerId): (state: RootState) => Player {
 
 export function selectPlayers(
   players: PlayerId[],
-): (state: RootState) => Map<PlayerId, Player> {
-  return (state: RootState) => {
-    const result = new Map<PlayerId, Player>();
-    for (const player of players) {
-      result.set(player, getPlayer(state, player));
-    }
-    return result;
-  };
+): (state: RootState) => Player[] {
+  return (state: RootState) => players.map((id) => getPlayer(state, id));
 }
 
 export function selectAllPlayers(state: RootState): Player[] {
   return Object.values(state.player.registry) as Player[];
+}
+
+export function getPlayerMap(players: Player[]): Map<PlayerId, Player> {
+  return players.reduce((map, player) => map.set(player.id, player), new Map());
 }
