@@ -17,6 +17,7 @@ export default function PlayerChip({
   const playerModel = useAppSelector(selectPlayer(player));
   return (
     <Chip
+      key={player}
       label={playerModel.name}
       variant="outlined"
       onClick={onClick}

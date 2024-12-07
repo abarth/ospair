@@ -228,7 +228,7 @@ export function selectRound(params: {
 }): (state: RootState) => {
   tournament: Tournament;
   roundIndex: RoundIndex;
-  round: Round;
+  round?: Round;
 } {
   return (state: RootState) => {
     const tournament = getTournament(state.tournament, params.tournamentId!);

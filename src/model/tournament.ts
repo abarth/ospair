@@ -347,10 +347,13 @@ export class TournamentHistoryBuilder {
   }
 }
 
-export function getTournamentHistoryBeforeRound(
+export function getTournamentHistoryForRound(
   tournament: Tournament,
   roundIndex: RoundIndex,
 ): TournamentHistory {
+  if (roundIndex >= tournament.rounds.length) {
+    throw new Error(`Round index ${roundIndex} out of bounds`);
+  }
   const builder = new TournamentHistoryBuilder();
   builder.registerPlayers(tournament.players);
   for (let i = 0; i < roundIndex; ++i) {

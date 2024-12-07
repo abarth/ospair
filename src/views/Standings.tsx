@@ -12,14 +12,19 @@ import { useAppSelector } from "../store/hooks";
 import { getPlayerMap, selectPlayers } from "../store/player-slice";
 import { useParams } from "react-router";
 import { selectRound } from "../store/tournament-slice";
-import { getTournamentHistoryBeforeRound } from "../model/tournament";
+import { getTournamentHistoryForRound } from "../model/tournament";
 
 export default function Standings() {
-  const { tournament, roundIndex } = useAppSelector(selectRound(useParams()));
+  const { tournament, roundIndex, round } = useAppSelector(
+    selectRound(useParams()),
+  );
   const players = getPlayerMap(
     useAppSelector(selectPlayers(tournament.players)),
   );
-  const history = getTournamentHistoryBeforeRound(tournament, roundIndex);
+  if (!round) {
+    return <>{`Round ${roundIndex + 1} not found`}</>;
+  }
+  const history = getTournamentHistoryForRound(tournament, roundIndex);
 
   return (
     <TableContainer component={Paper}>

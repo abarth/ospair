@@ -31,6 +31,9 @@ export default function ResultsEditor() {
     selectRound(useParams()),
   );
   const dispatch = useAppDispatch();
+  if (!round) {
+    return <>{`Round ${roundIndex + 1} not found`}</>;
+  }
   const isEditable = isCurrentRound(tournament, roundIndex);
   const maxTeamCount = Math.max(
     ...round.tables.map((table) => table.teams.length),
