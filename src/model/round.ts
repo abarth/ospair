@@ -30,7 +30,11 @@ class TeamAssignment {
     this.teams = Array.from({ length: teamCount }).map(() => []);
   }
 
-  isFresh(history: TournamentHistory, player: PlayerId, teamIndex: TeamIndex) {
+  isFresh(
+    history: TournamentHistory,
+    player: PlayerId,
+    teamIndex: TeamIndex,
+  ): boolean {
     for (const [index, team] of this.teams.entries()) {
       if (index === teamIndex) {
         if (team.some((member) => history.wereAllies(player, member))) {
@@ -42,6 +46,7 @@ class TeamAssignment {
         }
       }
     }
+    return true;
   }
 }
 
@@ -108,8 +113,8 @@ class PlayerAllocator {
   }
 
   private assignToTeam(assignment: TeamAssignment, teamIndex: TeamIndex) {
-    let player = this.takeNextMatchingPlayer(
-      (player) => !assignment.isFresh(this.history, player, teamIndex),
+    let player = this.takeNextMatchingPlayer((player) =>
+      assignment.isFresh(this.history, player, teamIndex),
     );
     if (!player) {
       player = this.takeNextPlayer();

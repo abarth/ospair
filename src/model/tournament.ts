@@ -356,7 +356,7 @@ export function getTournamentHistoryForRound(
   }
   const builder = new TournamentHistoryBuilder();
   builder.registerPlayers(tournament.players);
-  for (let i = 0; i < roundIndex; ++i) {
+  for (let i = 0; i <= roundIndex; ++i) {
     builder.addRound(tournament.rounds[i]);
   }
   return builder.build();
