@@ -24,7 +24,7 @@ export default function Standings() {
   if (!round) {
     return <>{`Round ${roundIndex + 1} not found`}</>;
   }
-  const history = getTournamentHistoryForRound(tournament, roundIndex);
+  const history = getTournamentHistoryForRound(tournament, roundIndex - 1);
 
   return (
     <TableContainer component={Paper}>
