@@ -16,10 +16,13 @@ import StyledTableRow from "./StyledTableRow";
 import TeamRoster from "./TeamRoster";
 
 export default function Pairings() {
-  const { round } = useAppSelector(selectRound(useParams()));
+  const { roundIndex, round } = useAppSelector(selectRound(useParams()));
   const players = sortedPlayers(
-    useAppSelector(selectPlayers(round.players)),
+    useAppSelector(selectPlayers(round?.players ?? [])),
   ).map((player) => player.id);
+  if (!round) {
+    return <>{`Round ${roundIndex + 1} not found`}</>;
+  }
   const seatings = getSeatAssignments(round);
 
   return (

@@ -8,10 +8,7 @@ import {
   Team,
   TeamIndex,
 } from "./objects";
-import {
-  getTournamentHistoryBeforeRound,
-  TournamentHistory,
-} from "./tournament";
+import { getTournamentHistoryForRound, TournamentHistory } from "./tournament";
 
 function getPlayersForRound(
   tournament: Tournament,
@@ -206,7 +203,7 @@ export function createRound(
   tournament: Tournament,
   roundIndex: RoundIndex,
 ): Round {
-  const history = getTournamentHistoryBeforeRound(tournament, roundIndex);
+  const history = getTournamentHistoryForRound(tournament, roundIndex - 1);
   const players = getPlayersForRound(tournament, roundIndex);
   const allocator = new PlayerAllocator(history, players);
 
