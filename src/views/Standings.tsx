@@ -15,9 +15,7 @@ import { selectRound } from "../store/tournament-slice";
 import { getTournamentHistoryBeforeRound } from "../model/tournament";
 
 export default function Standings() {
-  const { tournament, roundIndex, round } = useAppSelector(
-    selectRound(useParams()),
-  );
+  const { tournament, roundIndex } = useAppSelector(selectRound(useParams()));
   const players = getPlayerMap(
     useAppSelector(selectPlayers(tournament.players)),
   );

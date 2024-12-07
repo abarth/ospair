@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import { commaSeparatedList } from "../base/text";
 import { PlayerId } from "../model/objects";
 import { sortedPlayers } from "../model/player";
 import { selectPlayers } from "../store/player-slice";
@@ -19,5 +20,5 @@ export default function TeamRoster({
       players.unshift(leadPlayer);
     }
   }
-  return <>{players.map((player) => player.name).join(", ")}</>;
+  return <>{commaSeparatedList(players.map((player) => player.name))}</>;
 }

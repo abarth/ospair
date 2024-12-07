@@ -48,9 +48,7 @@ export default function Pairings() {
                         <>
                           {" "}
                           <i>{"vs"}</i>{" "}
-                          {seating.opposingTeams.map((opposingTeam, index) => (
-                            <TeamRoster key={index} team={opposingTeam} />
-                          ))}
+                          <TeamRoster key={index} team={opposingTeam} />
                         </>
                       ))}
                 </TableCell>
