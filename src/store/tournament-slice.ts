@@ -122,6 +122,10 @@ export const tournamentSlice = createSlice({
       let round = createRound(tournament, roundIndex);
       tournament.rounds.push(round);
     },
+    deleteCurrentRound: (state, action: PayloadAction<TournamentId>) => {
+      const tournament = getTournament(state, action.payload);
+      tournament.rounds.pop();
+    },
     setMatchWins: (
       state,
       action: PayloadAction<{
@@ -199,6 +203,7 @@ export const {
   setTournamentName,
   setMatchFormat,
   createNextRound,
+  deleteCurrentRound,
   setMatchWins,
   setMatchDraws,
   dropPlayer,
