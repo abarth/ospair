@@ -146,6 +146,45 @@ class PlayerAllocator {
     }
   }
 
+  allocateByes(matchFormat: MatchFormat): PlayerId[] {
+    if (this.playersRemaining === 0) {
+      return [];
+    }
+    switch (matchFormat) {
+      case MatchFormat.SinglePlayer:
+        // In Single Player, we need to allocate byes if there is an odd number of players.
+        if (this.playersRemaining % 2 === 1) {
+          let fewestByes = 0;
+          let playerIndexWithFewestByes = null;
+          for (
+            let playerIndex = this.playersRemaining - 1;
+            playerIndex >= 0;
+            --playerIndex
+          ) {
+            const player = this.players[playerIndex];
+            if (player) {
+              const byes = this.history.playerHistory.get(player)!.byes;
+              if (byes === 0) {
+                return [this.takePlayerAt(playerIndex)];
+              }
+              if (playerIndexWithFewestByes === null || byes < fewestByes) {
+                fewestByes = byes;
+                playerIndexWithFewestByes = playerIndex;
+              }
+            }
+          }
+          return [this.takePlayerAt(playerIndexWithFewestByes!)];
+        }
+        return [];
+      case MatchFormat.TwoHeadedGiant:
+        // In Two-Headed Giant, we only need to allocate byes if there is exactly one player.
+        if (this.playersRemaining === 1) {
+          return [this.takeNextPlayer()];
+        }
+        return [];
+    }
+  }
+
   allocatePlayers(shape: TeamShape): Team[] {
     if (this.playersRemaining < shape.teamCount * shape.playersPerTeam) {
       throw new Error(
@@ -172,6 +211,7 @@ export function createRound(
   const allocator = new PlayerAllocator(history, players);
 
   const tables: Table[] = [];
+  const playersWithByes = allocator.allocateByes(tournament.matchFormat);
   while (allocator.playersRemaining > 0) {
     const shape = allocator.getNextTeamShape(tournament.matchFormat);
     const teams = allocator.allocatePlayers(shape);
@@ -179,6 +219,15 @@ export function createRound(
       number: tables.length + 1,
       teams,
       wins: teams.map(() => 0),
+      draws: 0,
+    });
+  }
+
+  for (const player of playersWithByes) {
+    tables.push({
+      number: tables.length + 1,
+      teams: [[player]],
+      wins: [2],
       draws: 0,
     });
   }
