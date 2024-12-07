@@ -56,7 +56,7 @@ export default function ResultsEditor() {
             const isBye = table.teams.length === 1;
             return (
               <StyledTableRow key={tableIndex}>
-                <TableCell component="th" scope="row">
+                <TableCell key="table-number" component="th" scope="row">
                   {isBye ? "Bye" : table.number}
                 </TableCell>
                 {teamArray.map((_, teamIndex) => {
