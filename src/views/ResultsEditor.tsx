@@ -1,6 +1,8 @@
 import * as React from "react";
 import {
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Table,
   TableBody,
@@ -8,18 +10,18 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
 } from "@mui/material";
-import { SxProps, useTheme } from "@mui/material/styles";
 import {
   dropPlayer,
   undropPlayer,
   playerHasDropped,
-  setMatchResult,
+  setMatchWins,
+  setMatchDraws,
   selectRound,
   isCurrentRound,
 } from "../store/tournament-slice";
 import { teamNames } from "../model/objects";
+import StyledTableRow from "./StyledTableRow";
 import PlayerChip from "./PlayerChip";
 import { useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -29,98 +31,144 @@ export default function ResultsEditor() {
     selectRound(useParams()),
   );
   const dispatch = useAppDispatch();
-  const theme = useTheme();
   const isEditable = isCurrentRound(tournament, roundIndex);
-  // TODO: Be sure to show players who have byes so they can be dropped.
+  const maxTeamCount = Math.max(
+    ...round.tables.map((table) => table.teams.length),
+  );
+  const teamArray = new Array(maxTeamCount).fill(0);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Team</TableCell>
-            <TableCell>Players</TableCell>
-            <TableCell>Wins</TableCell>
+            <TableCell>Table</TableCell>
+            {teamArray.map((_, teamIndex) => (
+              <React.Fragment key={teamIndex}>
+                <TableCell align="right">Wins</TableCell>
+                <TableCell>{teamNames[teamIndex]}</TableCell>
+              </React.Fragment>
+            ))}
+            <TableCell>Draws</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {round.tables.flatMap((table) => {
-            const sx: SxProps = {
-              "&:last-child td, &:last-child th": {
-                border: 0,
-              },
-            };
-            if (table.number % 2 === 0) {
-              sx["backgroundColor"] = theme.palette.action.hover;
-            }
-            return table.teams.map((players, teamIndex) => {
-              return (
-                <TableRow key={table.number} sx={sx}>
-                  <TableCell component="th" scope="row">
-                    Table {table.number}, {teamNames[teamIndex]}
-                  </TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
-                      {players.map((player) => {
-                        const hasDropped = playerHasDropped(round, player);
-                        return (
-                          <PlayerChip
-                            player={player}
-                            dropped={hasDropped}
-                            onClick={
-                              isEditable && hasDropped
-                                ? () => {
-                                    dispatch(
-                                      undropPlayer({
-                                        tournamentId: tournament.id,
-                                        roundIndex,
-                                        player,
-                                      }),
-                                    );
-                                  }
-                                : undefined
-                            }
-                            onDelete={
-                              !isEditable || hasDropped
-                                ? undefined
-                                : () => {
-                                    dispatch(
-                                      dropPlayer({
-                                        tournamentId: tournament.id,
-                                        roundIndex,
-                                        player,
-                                      }),
-                                    );
-                                  }
-                            }
-                          />
-                        );
-                      })}
-                    </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <TextField
-                      type="number"
+          {round.tables.map((table, tableIndex) => {
+            const isBye = table.teams.length === 1;
+            return (
+              <StyledTableRow key={tableIndex}>
+                <TableCell component="th" scope="row">
+                  {isBye ? "Bye" : table.number}
+                </TableCell>
+                {teamArray.map((_, teamIndex) => {
+                  if (teamIndex >= table.teams.length) {
+                    return (
+                      <React.Fragment key={teamIndex}>
+                        <TableCell />
+                        <TableCell />
+                      </React.Fragment>
+                    );
+                  }
+                  const players = table.teams[teamIndex];
+                  return (
+                    <React.Fragment key={teamIndex}>
+                      <TableCell align="right">
+                        {isBye ? null : (
+                          <Select
+                            variant="outlined"
+                            size="small"
+                            autoWidth
+                            disabled={!isEditable}
+                            value={table.wins[teamIndex]}
+                            onChange={(event) => {
+                              const wins = event.target.value as number;
+                              dispatch(
+                                setMatchWins({
+                                  tournamentId: tournament.id,
+                                  roundIndex,
+                                  tableNumber: table.number,
+                                  teamIndex,
+                                  wins,
+                                }),
+                              );
+                            }}
+                          >
+                            <MenuItem value={0}>0</MenuItem>
+                            <MenuItem value={1}>1</MenuItem>
+                            <MenuItem value={2}>2</MenuItem>
+                          </Select>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Stack direction="row" spacing={1}>
+                          {players.map((player) => {
+                            const hasDropped = playerHasDropped(round, player);
+                            return (
+                              <PlayerChip
+                                player={player}
+                                dropped={hasDropped}
+                                onClick={
+                                  isEditable && hasDropped
+                                    ? () => {
+                                        dispatch(
+                                          undropPlayer({
+                                            tournamentId: tournament.id,
+                                            roundIndex,
+                                            player,
+                                          }),
+                                        );
+                                      }
+                                    : undefined
+                                }
+                                onDelete={
+                                  !isEditable || hasDropped
+                                    ? undefined
+                                    : () => {
+                                        dispatch(
+                                          dropPlayer({
+                                            tournamentId: tournament.id,
+                                            roundIndex,
+                                            player,
+                                          }),
+                                        );
+                                      }
+                                }
+                              />
+                            );
+                          })}
+                        </Stack>
+                      </TableCell>
+                    </React.Fragment>
+                  );
+                })}
+                <TableCell>
+                  {isBye ? null : (
+                    <Select
                       variant="outlined"
                       size="small"
+                      autoWidth
                       disabled={!isEditable}
-                      value={table.wins[teamIndex]}
+                      value={table.draws}
                       onChange={(event) => {
-                        const wins = parseInt(event.target.value);
+                        const draws = event.target.value as number;
                         dispatch(
-                          setMatchResult({
+                          setMatchDraws({
                             tournamentId: tournament.id,
                             roundIndex,
                             tableNumber: table.number,
-                            teamIndex,
-                            wins,
+                            draws,
                           }),
                         );
                       }}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            });
+                    >
+                      <MenuItem value={0}>0</MenuItem>
+                      <MenuItem value={1}>1</MenuItem>
+                      <MenuItem value={2}>2</MenuItem>
+                      <MenuItem value={3}>3</MenuItem>
+                    </Select>
+                  )}
+                </TableCell>
+              </StyledTableRow>
+            );
           })}
         </TableBody>
       </Table>

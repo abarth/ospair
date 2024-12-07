@@ -18,7 +18,9 @@ export default function Standings() {
   const { tournament, roundIndex, round } = useAppSelector(
     selectRound(useParams()),
   );
-  const players = getPlayerMap(useAppSelector(selectPlayers(round.players)));
+  const players = getPlayerMap(
+    useAppSelector(selectPlayers(tournament.players)),
+  );
   const history = getTournamentHistoryBeforeRound(tournament, roundIndex);
 
   return (
@@ -26,7 +28,7 @@ export default function Standings() {
       <Table sx={{ minWidth: 650 }} size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Rank</TableCell>
+            <TableCell align="right">Rank</TableCell>
             <TableCell>Player</TableCell>
             <TableCell align="right">Points</TableCell>
             <TableCell align="right">OMWP</TableCell>
@@ -40,7 +42,7 @@ export default function Standings() {
             const playerHistory = history.playerHistory.get(player)!;
             return (
               <StyledTableRow key={playerModel.id}>
-                <TableCell component="th" scope="row">
+                <TableCell align="right" component="th" scope="row">
                   {index + 1}
                 </TableCell>
                 <TableCell>{playerModel.name}</TableCell>

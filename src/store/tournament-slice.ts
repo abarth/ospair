@@ -9,6 +9,7 @@ import {
   Seating,
   teamNames,
   MatchFormat,
+  Table,
 } from "../model/objects";
 import { createRound } from "../model/round";
 import type { RootState } from "./index";
@@ -26,6 +27,21 @@ function getTournament(
   tournamentId: TournamentId,
 ): Tournament {
   return state.registry[tournamentId]!;
+}
+
+function getTable(
+  state: TournamentState,
+  tournamentId: TournamentId,
+  roundIndex: RoundIndex,
+  tableNumber: TableNumber,
+): Table {
+  const tournament = getTournament(state, tournamentId);
+  const round = tournament.rounds[roundIndex];
+  const table = round.tables.find((table) => table.number === tableNumber);
+  if (!table) {
+    throw new Error("Table not found");
+  }
+  return table;
 }
 
 export const tournamentSlice = createSlice({
@@ -106,7 +122,7 @@ export const tournamentSlice = createSlice({
       let round = createRound(tournament, roundIndex);
       tournament.rounds.push(round);
     },
-    setMatchResult: (
+    setMatchWins: (
       state,
       action: PayloadAction<{
         tournamentId: TournamentId;
@@ -116,15 +132,30 @@ export const tournamentSlice = createSlice({
         wins: number;
       }>,
     ) => {
-      const tournament = getTournament(state, action.payload.tournamentId);
-      const round = tournament.rounds[action.payload.roundIndex];
-      const table = round.tables.find(
-        (table) => table.number === action.payload.tableNumber,
+      const table = getTable(
+        state,
+        action.payload.tournamentId,
+        action.payload.roundIndex,
+        action.payload.tableNumber,
       );
-      if (!table) {
-        throw new Error("Table not found");
-      }
       table.wins[action.payload.teamIndex] = action.payload.wins;
+    },
+    setMatchDraws: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        tableNumber: TableNumber;
+        draws: number;
+      }>,
+    ) => {
+      const table = getTable(
+        state,
+        action.payload.tournamentId,
+        action.payload.roundIndex,
+        action.payload.tableNumber,
+      );
+      table.draws = action.payload.draws;
     },
     dropPlayer: (
       state,
@@ -168,7 +199,8 @@ export const {
   setTournamentName,
   setMatchFormat,
   createNextRound,
-  setMatchResult,
+  setMatchWins,
+  setMatchDraws,
   dropPlayer,
   undropPlayer,
 } = tournamentSlice.actions;
