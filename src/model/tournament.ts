@@ -234,6 +234,16 @@ class PlayerHistory {
 export class TournamentHistory {
   playerHistory: Map<PlayerId, PlayerHistory> = new Map();
   standings: PlayerId[] = [];
+
+  wereAllies(playerA: PlayerId, playerB: PlayerId): boolean {
+    const playerHistory = this.playerHistory.get(playerA)!;
+    return playerHistory.playedWith.has(playerB);
+  }
+
+  wereOpponents(playerA: PlayerId, playerB: PlayerId): boolean {
+    const playerHistory = this.playerHistory.get(playerA)!;
+    return playerHistory.playedAgainst.has(playerB);
+  }
 }
 
 class WinPercentages {
