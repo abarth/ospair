@@ -1,19 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { shuffle } from "../base/math";
 import {
   Tournament,
   TournamentId,
   PlayerId,
   Round,
   RoundIndex,
-  Score,
   TableNumber,
-  Table,
-  Team,
   Seating,
   teamNames,
   MatchFormat,
 } from "../model/objects";
+import { createRound } from "../model/round";
 import type { RootState } from "./index";
 
 interface TournamentState {
@@ -23,19 +20,6 @@ interface TournamentState {
 const initialState: TournamentState = {
   registry: {},
 };
-
-function getPlayersForRound(
-  tournament: Tournament,
-  roundIndex: RoundIndex,
-): PlayerId[] {
-  if (roundIndex === 0) {
-    return [...tournament.players];
-  }
-  const previousRound = tournament.rounds[roundIndex - 1];
-  return previousRound.players.filter(
-    (player) => !previousRound.dropped.includes(player),
-  );
-}
 
 function getTournament(
   state: TournamentState,
@@ -119,72 +103,7 @@ export const tournamentSlice = createSlice({
     createNextRound: (state, action: PayloadAction<TournamentId>) => {
       const tournament = getTournament(state, action.payload);
       const roundIndex = tournament.rounds.length;
-      const players = getPlayersForRound(tournament, roundIndex);
-
-      // TODO: Actually pair the players based on their scores.
-      shuffle(players);
-
-      let nextTableNumber = 1;
-
-      // Pair players by taking the first two players from the shuffled list
-      // and removing them from the list until there is either one or no players left.
-      // If there is one player left, they get a bye.
-      const tables: Table[] = [];
-
-      function seat(teams: Team[]) {
-        tables.push({
-          number: nextTableNumber++,
-          teams: teams,
-          outcome: new Array(teams.length).fill(0),
-        });
-      }
-
-      const maxPlayersPerTable = getMaxPlayersPerTable(tournament.matchFormat);
-
-      const tableCount = Math.ceil(players.length / maxPlayersPerTable);
-      for (let i = 0; i < tableCount; i++) {
-        const base = i * maxPlayersPerTable;
-        const assignedPlayers = players.slice(base, base + maxPlayersPerTable);
-        switch (tournament.matchFormat) {
-          case MatchFormat.SinglePlayer:
-            seat(assignedPlayers.map((player) => [player]));
-            break;
-          case MatchFormat.TwoHeadedGiant:
-            // If there are 5 people left, we should pair them as 3 and 2. Currently, we pair them as 4 and give the last player a bye.
-            // If there are 6 people left, we should pair them as 3 and 3. Currently, we pair them as 4 and 2.
-            switch (assignedPlayers.length) {
-              case 1:
-                seat([[assignedPlayers[0]]]);
-                break;
-              case 2:
-                seat([[assignedPlayers[0]], [assignedPlayers[1]]]);
-                break;
-              case 3:
-                seat([
-                  [assignedPlayers[0]],
-                  [assignedPlayers[1]],
-                  [assignedPlayers[2]],
-                ]);
-                break;
-              case 4:
-                seat([
-                  assignedPlayers.slice(0, 2),
-                  assignedPlayers.slice(2, 4),
-                ]);
-                break;
-              default:
-                throw new Error("Invalid number of players");
-            }
-            break;
-        }
-      }
-
-      let round: Round = {
-        players: players,
-        tables: tables,
-        dropped: [],
-      };
-
+      let round = createRound(tournament, roundIndex);
       tournament.rounds.push(round);
     },
     setMatchResult: (
@@ -194,7 +113,7 @@ export const tournamentSlice = createSlice({
         roundIndex: RoundIndex;
         tableNumber: TableNumber;
         teamIndex: number;
-        score: Score;
+        wins: number;
       }>,
     ) => {
       const tournament = getTournament(state, action.payload.tournamentId);
@@ -205,7 +124,7 @@ export const tournamentSlice = createSlice({
       if (!table) {
         throw new Error("Table not found");
       }
-      table.outcome[action.payload.teamIndex] = action.payload.score;
+      table.wins[action.payload.teamIndex] = action.payload.wins;
     },
     dropPlayer: (
       state,

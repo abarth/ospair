@@ -2,6 +2,7 @@ export type TournamentId = string;
 export type PlayerId = string;
 export type PlayerName = string;
 export type ClubName = string;
+export type TeamIndex = number;
 export type RoundIndex = number;
 export type TableNumber = number;
 type TeamName = string;
@@ -9,6 +10,12 @@ type TeamName = string;
 export enum MatchFormat {
   SinglePlayer = "single-player",
   TwoHeadedGiant = "two-headed-giant",
+}
+
+export enum MatchResult {
+  Win = "win",
+  Loss = "loss",
+  Draw = "draw",
 }
 
 export interface Player {
@@ -20,12 +27,16 @@ export interface Player {
 export const teamNames = ["Team A", "Team B", "Team C"];
 
 export type Team = PlayerId[];
-export type Score = number;
 
 export interface Table {
   number: TableNumber;
   teams: Team[];
-  outcome: Score[];
+
+  // The number of game wins for each team.
+  wins: number[];
+
+  // The number of draws for the table.
+  draws: number;
 }
 
 export interface Seating {
