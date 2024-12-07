@@ -35,7 +35,7 @@ export default function ResultsEditor() {
   const maxTeamCount = Math.max(
     ...round.tables.map((table) => table.teams.length),
   );
-  const teamArray = new Array(maxTeamCount).fill(0);
+  const teamArray = Array.from({ length: maxTeamCount }).fill(0);
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">

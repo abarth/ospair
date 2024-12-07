@@ -27,12 +27,13 @@ export default function TournamentListItems() {
   return (
     <React.Fragment>
       <ListSubheader>Tournaments</ListSubheader>
-      {tournaments.map((tournament) => {
+      {tournaments.map((tournament, tournamentIndex) => {
         const playerCount = tournament.players.length;
         const roundCount = tournament.rounds.length;
         const description = `${playerCount} players, ${roundCount} rounds`;
         return (
           <ListItemButton
+            key={tournamentIndex}
             onClick={() => {
               navigate(routeTo({ tournamentId: tournament.id }));
             }}
