@@ -21,7 +21,7 @@ export enum MatchResult {
 export interface Player {
   id: PlayerId;
   name: PlayerName;
-  club: ClubName;
+  club?: ClubName;
 }
 
 export const teamNames = ["Team A", "Team B", "Team C"];

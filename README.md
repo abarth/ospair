@@ -17,7 +17,7 @@
 
 # Features
  - 2HG
-  - Mixed pre-arraigned teams with dymamic teams
+  - Mixed pre-arraigned teams with dynamic teams
  - Import / export tournament data
 
 # Algorithm
