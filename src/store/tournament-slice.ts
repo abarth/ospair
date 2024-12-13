@@ -12,6 +12,7 @@ import {
   Table,
 } from "../model/objects";
 import { createRound } from "../model/round";
+import { getTable } from "../model/tournament";
 import type { RootState } from "./index";
 
 interface TournamentState {
@@ -29,19 +30,14 @@ function getTournament(
   return state.registry[tournamentId]!;
 }
 
-function getTable(
+function getTableFromState(
   state: TournamentState,
   tournamentId: TournamentId,
   roundIndex: RoundIndex,
   tableNumber: TableNumber,
 ): Table {
   const tournament = getTournament(state, tournamentId);
-  const round = tournament.rounds[roundIndex];
-  const table = round.tables.find((table) => table.number === tableNumber);
-  if (!table) {
-    throw new Error("Table not found");
-  }
-  return table;
+  return getTable(tournament, roundIndex, tableNumber);
 }
 
 export const tournamentSlice = createSlice({
@@ -136,7 +132,7 @@ export const tournamentSlice = createSlice({
         wins: number;
       }>,
     ) => {
-      const table = getTable(
+      const table = getTableFromState(
         state,
         action.payload.tournamentId,
         action.payload.roundIndex,
@@ -153,7 +149,7 @@ export const tournamentSlice = createSlice({
         draws: number;
       }>,
     ) => {
-      const table = getTable(
+      const table = getTableFromState(
         state,
         action.payload.tournamentId,
         action.payload.roundIndex,

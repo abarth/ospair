@@ -8,6 +8,7 @@ import {
   TeamIndex,
   Tournament,
   RoundIndex,
+  TableNumber,
 } from "./objects";
 
 // Whether the match was contested or a bye.
@@ -347,17 +348,30 @@ export class TournamentHistoryBuilder {
   }
 }
 
-export function getTournamentHistoryForRound(
+export function getTournamentHistoryBeforeRound(
   tournament: Tournament,
   roundIndex: RoundIndex,
 ): TournamentHistory {
-  if (roundIndex >= tournament.rounds.length) {
+  if (roundIndex > tournament.rounds.length) {
     throw new Error(`Round index ${roundIndex} out of bounds`);
   }
   const builder = new TournamentHistoryBuilder();
   builder.registerPlayers(tournament.players);
-  for (let i = 0; i <= roundIndex; ++i) {
+  for (let i = 0; i < roundIndex; ++i) {
     builder.addRound(tournament.rounds[i]);
   }
   return builder.build();
+}
+
+export function getTable(
+  tournament: Tournament,
+  roundIndex: RoundIndex,
+  tableNumber: TableNumber,
+): Table {
+  const round = tournament.rounds[roundIndex];
+  const table = round.tables.find((table) => table.number === tableNumber);
+  if (!table) {
+    throw new Error("Table not found");
+  }
+  return table;
 }
