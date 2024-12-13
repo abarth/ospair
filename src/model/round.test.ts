@@ -21,6 +21,5 @@ test("pairings for first round", () => {
     expect(table.wins).toEqual([0, 0]);
     expect(table.draws).toBe(0);
   }
-
   expect(seatedPlayers).toEqual(expect.arrayContaining(tournament.players));
 });

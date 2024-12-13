@@ -1,11 +1,5 @@
 import { zip } from "../base/array";
-import {
-  MatchFormat,
-  RoundIndex,
-  TableNumber,
-  Tournament,
-} from "../model/objects";
-import { getTable } from "../model/tournament";
+import { MatchFormat, Tournament } from "../model/objects";
 
 const PLAYER_NAMES = [
   "Alice",
