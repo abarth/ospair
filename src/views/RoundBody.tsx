@@ -12,19 +12,19 @@ export default function RoundBody() {
       <TabContext value={tabIndex}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <TabList onChange={(event, newValue) => setTabIndex(newValue)}>
-            <Tab label="Standings" value="1" />
-            <Tab label="Pairings" value="2" />
-            <Tab label="Results" value="3" />
+            <Tab label="Pairings" value="1" />
+            <Tab label="Results" value="2" />
+            <Tab label="Standings" value="3" />
           </TabList>
         </Box>
         <TabPanel value="1">
-          <Standings />
-        </TabPanel>
-        <TabPanel value="2">
           <Pairings />
         </TabPanel>
-        <TabPanel value="3">
+        <TabPanel value="2">
           <ResultsEditor />
+        </TabPanel>
+        <TabPanel value="3">
+          <Standings />
         </TabPanel>
       </TabContext>
     </Box>
