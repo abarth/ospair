@@ -8,22 +8,16 @@ import {
   TableRow,
 } from "@mui/material";
 import { useParams } from "react-router";
-import { sortedPlayers } from "../model/player";
 import { useAppSelector } from "../store/hooks";
-import { selectPlayers } from "../store/player-slice";
-import { getSeatAssignments, selectRound } from "../store/tournament-slice";
+import { selectRound } from "../store/tournament-slice";
 import StyledTableRow from "./StyledTableRow";
 import TeamRoster from "./TeamRoster";
 
 export default function Pairings() {
   const { roundIndex, round } = useAppSelector(selectRound(useParams()));
-  const players = sortedPlayers(
-    useAppSelector(selectPlayers(round?.players ?? [])),
-  ).map((player) => player.id);
   if (!round) {
     return <>{`Round ${roundIndex + 1} not found`}</>;
   }
-  const seatings = getSeatAssignments(round);
 
   return (
     <TableContainer component={Paper}>
@@ -35,25 +29,26 @@ export default function Pairings() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {players.map((player) => {
-            const seating = seatings.get(player)!;
-            const isBye = seating.opposingTeams.length === 0;
+          {round.tables.map((table) => {
+            const isBye = table.teams.length === 1;
             return (
-              <StyledTableRow key={player}>
+              <StyledTableRow key={table.number}>
                 <TableCell align="right">
-                  {isBye ? "Bye" : seating.tableNumber}
+                  {isBye ? "Bye" : table.number}
                 </TableCell>
                 <TableCell>
-                  <TeamRoster team={seating.allies} lead={player} />
-                  {isBye
-                    ? null
-                    : seating.opposingTeams.map((opposingTeam, index) => (
+                  {table.teams.map((team, index) => {
+                    if (index > 0) {
+                      return (
                         <>
                           {" "}
-                          <i>{"vs"}</i>{" "}
-                          <TeamRoster key={index} team={opposingTeam} />
+                          <i>{"vs"}</i> <TeamRoster key={index} team={team} />
                         </>
-                      ))}
+                      );
+                    } else {
+                      return <TeamRoster key={index} team={team} />;
+                    }
+                  })}
                 </TableCell>
               </StyledTableRow>
             );
