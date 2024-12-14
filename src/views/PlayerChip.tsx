@@ -1,4 +1,4 @@
-import { Badge, Chip } from "@mui/material";
+import { Chip } from "@mui/material";
 import { PlayerId } from "../model/objects";
 import { useAppSelector } from "../store/hooks";
 import { selectPlayer } from "../store/player-slice";

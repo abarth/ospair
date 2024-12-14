@@ -8,6 +8,7 @@
   - Possibly in a separate tab for projector
   - Possibly on the pairings page
  - Could also support cutting to a top-N single elimination bracket
+ - Club should be optional in "add player" form
 
 # Features
  - 2HG
