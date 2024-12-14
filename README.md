@@ -4,7 +4,6 @@
    Joel was running late and we might have wanted to give him
    a bye in the first round.
  - Need to check people off as they check in.
- - Need to be able to go back to registration
  - Need a round timer
   - Possibly in a separate tab for projector
   - Possibly on the pairings page

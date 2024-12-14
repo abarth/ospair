@@ -33,19 +33,23 @@ export default function DeleteTournamentButton() {
   function handleDelete() {
     dispatch(deleteCurrentRound(tournament.id));
     setOpen(false);
-    navigate(
-      routeTo({
-        tournamentId: tournament.id,
-        roundIndex: roundIndex - 1,
-      }),
-    );
+    if (roundIndex === 0) {
+      navigate(routeTo({ tournamentId: tournament.id }));
+    } else {
+      navigate(
+        routeTo({
+          tournamentId: tournament.id,
+          roundIndex: roundIndex - 1,
+        }),
+      );
+    }
   }
 
   return (
     <React.Fragment>
       <Button
         color="inherit"
-        disabled={roundIndex === 0 || !isCurrentRound(tournament, roundIndex)}
+        disabled={roundIndex === -1 || !isCurrentRound(tournament, roundIndex)}
         onClick={handleOpen}
       >
         Delete Round
