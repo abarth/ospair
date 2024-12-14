@@ -16,6 +16,9 @@ enum MatchType {
   // The team had an opponent during this match.
   Contested,
 
+  // The match does not have a result yet.
+  Pending,
+
   // The team had a bye during this match.
   Bye,
 }
@@ -82,13 +85,18 @@ function getMatchRecordFromTable(
   table: Table,
   teamIndex: TeamIndex,
 ): MatchRecord {
-  // If there is only one team in the table, the team gets a bye.
-  const matchType =
-    table.teams.length === 1 ? MatchType.Bye : MatchType.Contested;
   const wins = table.wins[teamIndex];
   // The number of losses is the sum of the wins of all other teams.
   const losses = sum(table.wins.filter((value, index) => index !== teamIndex));
   const draws = table.draws;
+  let matchType = MatchType.Contested;
+  if (table.teams.length === 1) {
+    // If there is only one team in the table, the team gets a bye.
+    matchType = MatchType.Bye;
+  } else if (wins + losses + draws === 0) {
+    // If no games have been played, the match is pending.
+    matchType = MatchType.Pending;
+  }
   return new MatchRecord(matchType, wins, losses, draws);
 }
 
@@ -191,6 +199,10 @@ class PlayerHistory {
 
   // Record the result of a match for the player.
   recordMatchResult(record: MatchRecord) {
+    if (record.matchType === MatchType.Pending) {
+      return;
+    }
+
     this.matchPoints += record.matchPoints;
     this.possibleMatchPoints += record.possibleMatchPoints;
     this.gamePoints += record.gamePoints;
