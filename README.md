@@ -8,7 +8,6 @@
   - Possibly in a separate tab for projector
   - Possibly on the pairings page
  - Would be nice to see the pairings by table
- - Convert the delete button to a trash can icon
  - Should be able to see the standings before all the matches finish
  - Need a "final standings" page or a "finish tournament" button
  - Could also support cutting to a top-N single elimination bracket

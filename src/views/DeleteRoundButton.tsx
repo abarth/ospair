@@ -6,7 +6,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   deleteCurrentRound,
@@ -47,15 +49,16 @@ export default function DeleteTournamentButton() {
 
   return (
     <React.Fragment>
-      <Button
+      <IconButton
         color="inherit"
+        aria-label="delete round"
         disabled={roundIndex === -1 || !isCurrentRound(tournament, roundIndex)}
         onClick={handleOpen}
       >
-        Delete Round
-      </Button>
+        <DeleteIcon />
+      </IconButton>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Delete Tournament?</DialogTitle>
+        <DialogTitle>Delete Round {roundIndex + 1}?</DialogTitle>
         <DialogContent>
           <DialogContentText>
             Are you sure you want to delete round {roundIndex + 1}? This action
