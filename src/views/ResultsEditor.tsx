@@ -108,7 +108,7 @@ export default function ResultsEditor() {
                             return (
                               <PlayerChip
                                 player={player}
-                                dropped={hasDropped}
+                                color={hasDropped ? "error" : undefined}
                                 onClick={
                                   isEditable && hasDropped
                                     ? () => {

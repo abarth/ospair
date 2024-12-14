@@ -1,16 +1,16 @@
-import { Chip } from "@mui/material";
+import { Badge, Chip } from "@mui/material";
 import { PlayerId } from "../model/objects";
 import { useAppSelector } from "../store/hooks";
 import { selectPlayer } from "../store/player-slice";
 
 export default function PlayerChip({
   player,
-  dropped,
+  color,
   onClick,
   onDelete,
 }: {
   player: PlayerId;
-  dropped?: boolean;
+  color?: "default" | "success" | "error";
   onClick?: () => void;
   onDelete?: () => void;
 }) {
@@ -22,7 +22,7 @@ export default function PlayerChip({
       variant="outlined"
       onClick={onClick}
       onDelete={onDelete}
-      color={dropped ? "error" : "default"}
+      color={color}
     />
   );
 }

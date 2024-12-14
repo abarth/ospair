@@ -28,7 +28,7 @@ export default function PlayerRegistration() {
             <PlayerChip
               key={player}
               player={player}
-              dropped={dropped}
+              color={dropped ? "error" : undefined}
               onDelete={
                 canRegisterPlayers
                   ? () =>
