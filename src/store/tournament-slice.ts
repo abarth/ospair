@@ -55,7 +55,7 @@ export const tournamentSlice = createSlice({
       const tournament = {
         id: action.payload.tournamentId,
         name: action.payload.name,
-        matchFormat: action.payload.matchFormat ?? MatchFormat.SinglePlayer,
+        matchFormat: action.payload.matchFormat ?? MatchFormat.HeadToHead,
         players: [],
         rounds: [],
       };
@@ -263,7 +263,7 @@ export function hasActivePlayers(tournament: Tournament): boolean {
 
 export function getPlayersPerTeam(matchFormat: MatchFormat): number {
   switch (matchFormat) {
-    case MatchFormat.SinglePlayer:
+    case MatchFormat.HeadToHead:
       return 1;
     case MatchFormat.TwoHeadedGiant:
       return 2;
@@ -272,7 +272,7 @@ export function getPlayersPerTeam(matchFormat: MatchFormat): number {
 
 export function getMaxPlayersPerTable(matchFormat: MatchFormat): number {
   switch (matchFormat) {
-    case MatchFormat.SinglePlayer:
+    case MatchFormat.HeadToHead:
       return 2;
     case MatchFormat.TwoHeadedGiant:
       return 4;

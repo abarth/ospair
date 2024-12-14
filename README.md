@@ -1,6 +1,5 @@
 
 # Notes
- - Single player is a confusing name. Consider 1v1.
  - Might be useful to be able to force a player to have a bye.
    Joel was running late and we might have wanted to give him
    a bye in the first round.

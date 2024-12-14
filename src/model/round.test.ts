@@ -8,7 +8,7 @@ import { createRound } from "./round";
 
 test("pairings for first round", () => {
   const tournament = createMockTournament({
-    matchFormat: MatchFormat.SinglePlayer,
+    matchFormat: MatchFormat.HeadToHead,
     playerCount: 6,
   });
   const round = createRound(tournament, 0);
@@ -30,7 +30,7 @@ test("pairings for first round", () => {
 
 test("pairings for second round", () => {
   const tournament = createMockTournament({
-    matchFormat: MatchFormat.SinglePlayer,
+    matchFormat: MatchFormat.HeadToHead,
     playerCount: 8,
   });
   tournament.rounds.push(

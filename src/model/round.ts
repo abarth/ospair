@@ -133,7 +133,7 @@ class PlayerAllocator {
       return { teamCount: 1, playersPerTeam: 1 };
     }
     switch (matchFormat) {
-      case MatchFormat.SinglePlayer:
+      case MatchFormat.HeadToHead:
         return { teamCount: 2, playersPerTeam: 1 };
       case MatchFormat.TwoHeadedGiant:
         // If there are six players left, we should pair them as 3 and 3 rather than as 4 and 2.
@@ -156,7 +156,7 @@ class PlayerAllocator {
       return [];
     }
     switch (matchFormat) {
-      case MatchFormat.SinglePlayer:
+      case MatchFormat.HeadToHead:
         // In Single Player, we need to allocate byes if there is an odd number of players.
         if (this.playersRemaining % 2 === 1) {
           let fewestByes = 0;

@@ -8,7 +8,7 @@ export type TableNumber = number;
 type TeamName = string;
 
 export enum MatchFormat {
-  SinglePlayer = "single-player",
+  HeadToHead = "head-to-head",
   TwoHeadedGiant = "two-headed-giant",
 }
 

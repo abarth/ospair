@@ -67,9 +67,9 @@ export default function TournamentSettings() {
             label="Match Format"
             onChange={handleMatchFormatChange}
           >
-            <MenuItem value={MatchFormat.SinglePlayer}>Single Player</MenuItem>
+            <MenuItem value={MatchFormat.HeadToHead}>1v1</MenuItem>
             <MenuItem value={MatchFormat.TwoHeadedGiant}>
-              Two-Headed Giant
+              2v2 (Two-Headed Giant)
             </MenuItem>
           </Select>
         </FormControl>

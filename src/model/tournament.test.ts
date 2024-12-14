@@ -8,7 +8,7 @@ import { getTournamentHistoryBeforeRound } from "./tournament";
 
 test("history after zero rounds", () => {
   const tournament = createMockTournament({
-    matchFormat: MatchFormat.SinglePlayer,
+    matchFormat: MatchFormat.HeadToHead,
     playerCount: 6,
   });
 
@@ -34,7 +34,7 @@ test("history after zero rounds", () => {
 
 test("history after one round", () => {
   const tournament = createMockTournament({
-    matchFormat: MatchFormat.SinglePlayer,
+    matchFormat: MatchFormat.HeadToHead,
     playerCount: 6,
   });
   tournament.rounds.push(createRound(tournament, 0));
