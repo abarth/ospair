@@ -1,5 +1,6 @@
 import { zip } from "../base/array";
-import { MatchFormat, Tournament } from "../model/objects";
+import { MatchFormat, Round, Table, Team, Tournament } from "../model/objects";
+import { getPlayersForRound } from "../model/round";
 
 const PLAYER_NAMES = [
   "Alice",
@@ -43,6 +44,32 @@ export function createMockTournament({
     matchFormat: matchFormat,
     rounds: [],
     players: PLAYER_NAMES.slice(0, playerCount),
+  };
+}
+
+interface MockPairing {
+  teams: Team[];
+}
+
+export function createMockRound(
+  tournament: Tournament,
+  parings: MockPairing[],
+): Round {
+  const roundIndex = tournament.rounds.length;
+  const players = getPlayersForRound(tournament, roundIndex);
+  const tables: Table[] = [];
+  for (const { teams } of parings) {
+    tables.push({
+      number: tables.length + 1,
+      teams: teams,
+      wins: teams.map(() => 0),
+      draws: 0,
+    });
+  }
+  return {
+    players,
+    tables,
+    dropped: [],
   };
 }
 

@@ -13,7 +13,7 @@ import {
   TournamentHistory,
 } from "./tournament";
 
-function getPlayersForRound(
+export function getPlayersForRound(
   tournament: Tournament,
   roundIndex: RoundIndex,
 ): PlayerId[] {
