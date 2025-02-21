@@ -40,7 +40,7 @@ function getTableFromState(
   return getTable(tournament, roundIndex, tableNumber);
 }
 
-function getAvailablePlayers(tournament: Tournament): PlayerId[] {
+export function getAvailablePlayers(tournament: Tournament): PlayerId[] {
   if (typeof tournament.availablePlayers === "undefined") {
     tournament.availablePlayers = [];
   }
@@ -265,10 +265,7 @@ export function hasRegisteredPlayers(tournament: Tournament): boolean {
 }
 
 export function hasAvailablePlayers(tournament: Tournament): boolean {
-  return (
-    tournament.availablePlayers !== undefined &&
-    tournament.availablePlayers.length > 0
-  );
+  return getAvailablePlayers(tournament).length > 0;
 }
 
 function getCurrentRound(tournament: Tournament): Round {

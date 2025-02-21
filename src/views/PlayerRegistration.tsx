@@ -3,6 +3,7 @@ import { Stack, Typography } from "@mui/material";
 import {
   registerPlayer,
   unregisterPlayer,
+  getAvailablePlayers,
   hasRegisteredPlayers,
   hasAvailablePlayers,
   selectTournament,
@@ -56,7 +57,7 @@ export default function PlayerRegistration() {
       <React.Fragment>
         <Typography variant="h6">Available Players</Typography>
         <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
-          {tournament.availablePlayers.map((player) => (
+          {getAvailablePlayers(tournament).map((player) => (
             <PlayerChip
               key={player}
               player={player}
