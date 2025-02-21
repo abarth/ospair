@@ -14,14 +14,14 @@ import {
 } from "@mui/material";
 import { useParams } from "react-router";
 import { useAppSelector } from "../store/hooks";
-import { selectRound, setMatchWins } from "../store/tournament-slice";
+import { selectRound } from "../store/tournament-slice";
 import StyledTableRow from "./StyledTableRow";
 import TeamRoster from "./TeamRoster";
-import { table } from "console";
 
 export default function Pairings() {
   const { roundIndex, round } = useAppSelector(selectRound(useParams()));
-  const [columnCount, setColumnCount] = React.useState(1);
+  const tableCount = round?.tables.length ?? 0;
+  const [columnCount, setColumnCount] = React.useState(tableCount > 20 ? 2 : 1);
 
   if (!round) {
     return <>{`Round ${roundIndex + 1} not found`}</>;
