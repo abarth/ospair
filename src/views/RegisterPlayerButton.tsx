@@ -78,7 +78,6 @@ export default function RegisterPlayerButton({
             variant="standard"
           />
           <TextField
-            required
             margin="dense"
             id="club"
             name="club"
