@@ -1,3 +1,5 @@
+import { PRNG } from "seedrandom";
+import { shuffled } from "../base/random";
 import {
   RoundIndex,
   Tournament,
@@ -65,13 +67,19 @@ class PlayerAllocator {
   private nextPlayerIndex: number = 0;
 
   constructor(
+    private prng: PRNG,
     private history: TournamentHistory,
     players: PlayerId[],
   ) {
     const active = new Set(players);
-    this.players = this.history.standings.filter((player) =>
-      active.has(player),
+    const playersByMatchPoints = this.history.playersByMatchPoints;
+    // Sort the keys by decending match points.
+    const keys = [...playersByMatchPoints.keys()].sort((a, b) => b - a);
+    const groups = keys.map((key) =>
+      playersByMatchPoints.get(key)!.filter((player) => active.has(player)),
     );
+    const shuffledGroups = groups.map((group) => shuffled(prng, group));
+    this.players = shuffledGroups.flat();
     this.playersRemaining = this.players.length;
   }
 
@@ -208,12 +216,13 @@ class PlayerAllocator {
 }
 
 export function createRound(
+  prng: PRNG,
   tournament: Tournament,
   roundIndex: RoundIndex,
 ): Round {
   const history = getTournamentHistoryBeforeRound(tournament, roundIndex);
   const players = getPlayersForRound(tournament, roundIndex);
-  const allocator = new PlayerAllocator(history, players);
+  const allocator = new PlayerAllocator(prng, history, players);
 
   const tables: Table[] = [];
   const playersWithByes = allocator.allocateByes(tournament.matchFormat);

@@ -16,6 +16,3 @@
  - Dark mode
  - Add event art
   - Backdrop art
-
-# Algorithm
- - Randomize within a point group during pairing

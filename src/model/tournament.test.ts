@@ -1,3 +1,4 @@
+import { alea } from "seedrandom";
 import {
   createMockTournament,
   playMockRound,
@@ -37,7 +38,8 @@ test("history after one round", () => {
     matchFormat: MatchFormat.HeadToHead,
     playerCount: 6,
   });
-  tournament.rounds.push(createRound(tournament, 0));
+  const prng = alea("test-seed");
+  tournament.rounds.push(createRound(prng, tournament, 0));
   const p00 = tournament.rounds[0].tables[0].teams[0][0];
   const p01 = tournament.rounds[0].tables[0].teams[1][0];
   const p10 = tournament.rounds[0].tables[1].teams[0][0];

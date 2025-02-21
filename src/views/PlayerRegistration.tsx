@@ -4,7 +4,6 @@ import { Stack, Typography } from "@mui/material";
 import {
   registerPlayer,
   unregisterPlayer,
-  getAvailablePlayers,
   selectTournament,
   hasStarted,
   playerHasDroppedFromTournament,
@@ -24,35 +23,38 @@ export default function PlayerRegistration() {
 
   const players = useSelector(selectSortedPlayerIds(tournament.players));
   const availablePlayers = useSelector(
-    selectSortedPlayerIds(getAvailablePlayers(tournament)),
+    selectSortedPlayerIds(tournament.availablePlayers),
   );
 
   let playerList;
   if (players.length > 0) {
     playerList = (
-      <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
-        {players.map((player) => {
-          const dropped = playerHasDroppedFromTournament(tournament, player);
-          return (
-            <PlayerChip
-              key={player}
-              player={player}
-              color={dropped ? "error" : undefined}
-              onDelete={
-                canRegisterPlayers
-                  ? () =>
-                      dispatch(
-                        unregisterPlayer({
-                          tournamentId: tournament.id,
-                          player,
-                        }),
-                      )
-                  : undefined
-              }
-            />
-          );
-        })}
-      </Stack>
+      <React.Fragment>
+        <Typography variant="h6">Players</Typography>
+        <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
+          {players.map((player) => {
+            const dropped = playerHasDroppedFromTournament(tournament, player);
+            return (
+              <PlayerChip
+                key={player}
+                player={player}
+                color={dropped ? "error" : undefined}
+                onDelete={
+                  canRegisterPlayers
+                    ? () =>
+                        dispatch(
+                          unregisterPlayer({
+                            tournamentId: tournament.id,
+                            player,
+                          }),
+                        )
+                    : undefined
+                }
+              />
+            );
+          })}
+        </Stack>
+      </React.Fragment>
     );
   }
 
@@ -94,7 +96,6 @@ export default function PlayerRegistration() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="h6">Players</Typography>
       {playerList}
       {registerPlayerButton}
       {availablePlayerList}

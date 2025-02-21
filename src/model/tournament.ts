@@ -257,6 +257,21 @@ export class TournamentHistory {
     const playerHistory = this.playerHistory.get(playerA)!;
     return playerHistory.playedAgainst.has(playerB);
   }
+
+  get playersByMatchPoints(): Map<number, PlayerId[]> {
+    const playersByMatchPoints = new Map<number, PlayerId[]>();
+    for (const player of this.standings) {
+      const playerHistory = this.playerHistory.get(player)!;
+      const matchPoints = playerHistory.matchPoints;
+      let players = playersByMatchPoints.get(matchPoints);
+      if (typeof players === "undefined") {
+        players = [];
+        playersByMatchPoints.set(matchPoints, players);
+      }
+      players.push(player);
+    }
+    return playersByMatchPoints;
+  }
 }
 
 class WinPercentages {

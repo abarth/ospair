@@ -1,3 +1,4 @@
+import { alea } from "seedrandom";
 import {
   createMockRound,
   createMockTournament,
@@ -11,7 +12,8 @@ test("pairings for first round", () => {
     matchFormat: MatchFormat.HeadToHead,
     playerCount: 6,
   });
-  const round = createRound(tournament, 0);
+  const prng = alea("test-seed");
+  const round = createRound(prng, tournament, 0);
   expect(round.players).toEqual(expect.arrayContaining(tournament.players));
   expect(round.tables.length).toBe(3);
   expect(round.dropped).toEqual([]);
@@ -55,7 +57,8 @@ test("pairings for second round", () => {
     { wins: [1, 1], draws: 1 },
     { wins: [1, 1], draws: 1 },
   ]);
-  const round = createRound(tournament, 1);
+  const prng = alea("test-seed");
+  const round = createRound(prng, tournament, 1);
   expect(round.players).toEqual(expect.arrayContaining(tournament.players));
   expect(round.tables.length).toBe(4);
   // Winners from the first round are seated first

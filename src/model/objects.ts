@@ -98,7 +98,7 @@ export interface Tournament {
 
   /// The list of players who registered for the tournament but who did not
   /// play in the tournament.
-  availablePlayers?: PlayerId[];
+  availablePlayers: PlayerId[];
 
   /// The rounds played in the tournament.
   rounds: Round[];

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { alea } from "seedrandom";
 import {
   Tournament,
   TournamentId,
@@ -40,18 +41,11 @@ function getTableFromState(
   return getTable(tournament, roundIndex, tableNumber);
 }
 
-export function getAvailablePlayers(tournament: Tournament): PlayerId[] {
-  if (typeof tournament.availablePlayers === "undefined") {
-    tournament.availablePlayers = [];
-  }
-  return tournament.availablePlayers;
-}
-
 function registerPlayerInternal(
   tournament: Tournament,
   player: PlayerId,
 ): void {
-  tournament.availablePlayers = getAvailablePlayers(tournament).filter(
+  tournament.availablePlayers = tournament.availablePlayers.filter(
     (unregisteredPlayer) => unregisteredPlayer !== player,
   );
   tournament.players.push(player);
@@ -74,7 +68,7 @@ export const tournamentSlice = createSlice({
         name: action.payload.name,
         matchFormat: action.payload.matchFormat ?? MatchFormat.HeadToHead,
         players: [],
-        unregisterPlayers: [],
+        availablePlayers: [],
         rounds: [],
       };
       state.registry[tournament.id] = tournament;
@@ -115,7 +109,7 @@ export const tournamentSlice = createSlice({
       tournament.players = tournament.players.filter(
         (player) => player !== unregisteredPlayer,
       );
-      getAvailablePlayers(tournament).push(unregisteredPlayer);
+      tournament.availablePlayers.push(unregisteredPlayer);
     },
     setTournamentName: (
       state,
@@ -137,7 +131,8 @@ export const tournamentSlice = createSlice({
     createNextRound: (state, action: PayloadAction<TournamentId>) => {
       const tournament = getTournament(state, action.payload);
       const roundIndex = tournament.rounds.length;
-      let round = createRound(tournament, roundIndex);
+      const prng = alea(`${tournament.id} [Round ${roundIndex}]`);
+      let round = createRound(prng, tournament, roundIndex);
       tournament.rounds.push(round);
     },
     deleteCurrentRound: (state, action: PayloadAction<TournamentId>) => {
@@ -265,7 +260,7 @@ export function hasRegisteredPlayers(tournament: Tournament): boolean {
 }
 
 export function hasAvailablePlayers(tournament: Tournament): boolean {
-  return getAvailablePlayers(tournament).length > 0;
+  return tournament.availablePlayers.length > 0;
 }
 
 function getCurrentRound(tournament: Tournament): Round {
