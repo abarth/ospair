@@ -1,4 +1,3 @@
-
 # Notes
  - Might be useful to be able to force a player to have a bye.
    Joel was running late and we might have wanted to give him
@@ -14,6 +13,9 @@
  - 2HG
   - Mixed pre-arraigned teams with dynamic teams
  - Import / export tournament data
+
+ - Display pairings alphabetically by player namer
+ - Dark mode
 
 # Algorithm
  - Randomize within a point group during pairing
