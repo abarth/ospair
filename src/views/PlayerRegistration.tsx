@@ -1,15 +1,15 @@
 import * as React from "react";
+import { useSelector } from "react-redux";
 import { Stack, Typography } from "@mui/material";
 import {
   registerPlayer,
   unregisterPlayer,
   getAvailablePlayers,
-  hasRegisteredPlayers,
-  hasAvailablePlayers,
   selectTournament,
   hasStarted,
   playerHasDroppedFromTournament,
 } from "../store/tournament-slice";
+import { selectSortedPlayerIds } from "../store/player-slice";
 import PlayerImporter from "./PlayerImporter";
 import PlayerChip from "./PlayerChip";
 import RegisterPlayerButton from "./RegisterPlayerButton";
@@ -22,11 +22,16 @@ export default function PlayerRegistration() {
 
   const canRegisterPlayers = !hasStarted(tournament);
 
+  const players = useSelector(selectSortedPlayerIds(tournament.players));
+  const availablePlayers = useSelector(
+    selectSortedPlayerIds(getAvailablePlayers(tournament)),
+  );
+
   let playerList;
-  if (hasRegisteredPlayers(tournament)) {
+  if (players.length > 0) {
     playerList = (
       <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
-        {tournament.players.map((player) => {
+        {players.map((player) => {
           const dropped = playerHasDroppedFromTournament(tournament, player);
           return (
             <PlayerChip
@@ -51,13 +56,13 @@ export default function PlayerRegistration() {
     );
   }
 
-  let unregisteredPlayerList;
-  if (hasAvailablePlayers(tournament)) {
-    unregisteredPlayerList = (
+  let availablePlayerList;
+  if (availablePlayers.length > 0) {
+    availablePlayerList = (
       <React.Fragment>
-        <Typography variant="h6">Available Players</Typography>
+        <Typography variant="h6">People who are not playing</Typography>
         <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
-          {getAvailablePlayers(tournament).map((player) => (
+          {availablePlayers.map((player) => (
             <PlayerChip
               key={player}
               player={player}
@@ -92,7 +97,7 @@ export default function PlayerRegistration() {
       <Typography variant="h6">Players</Typography>
       {playerList}
       {registerPlayerButton}
-      {unregisteredPlayerList}
+      {availablePlayerList}
     </Stack>
   );
 }

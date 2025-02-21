@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Player, PlayerId } from "../model/objects";
+import { sortedPlayers } from "../model/player";
 import type { RootState } from "./index";
 
 interface PlayerState {
@@ -40,6 +41,15 @@ export function selectPlayers(
   players: PlayerId[],
 ): (state: RootState) => Player[] {
   return (state: RootState) => players.map((id) => getPlayer(state, id));
+}
+
+export function selectSortedPlayerIds(
+  players: PlayerId[],
+): (state: RootState) => PlayerId[] {
+  return (state: RootState) => {
+    const sorted = sortedPlayers(players.map((id) => getPlayer(state, id)));
+    return sorted.map((player) => player.id);
+  };
 }
 
 export function selectAllPlayers(state: RootState): Player[] {
