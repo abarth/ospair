@@ -14,7 +14,7 @@ export function parsePlayersCsv(
       const players: Player[] = [];
       for (const entry of results.data) {
         if (!isRegistration(entry)) continue;
-        let name = [entry["First Name"], entry["Last Name"]].join(" ");
+        let name = [entry["First Name"], entry["Last Name"]].join(" ").trim();
         players.push({
           id: nanoid(),
           name: name,
