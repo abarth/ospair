@@ -40,6 +40,23 @@ function getTableFromState(
   return getTable(tournament, roundIndex, tableNumber);
 }
 
+function getAvailablePlayers(tournament: Tournament): PlayerId[] {
+  if (typeof tournament.availablePlayers === "undefined") {
+    tournament.availablePlayers = [];
+  }
+  return tournament.availablePlayers;
+}
+
+function registerPlayerInternal(
+  tournament: Tournament,
+  player: PlayerId,
+): void {
+  tournament.availablePlayers = getAvailablePlayers(tournament).filter(
+    (unregisteredPlayer) => unregisteredPlayer !== player,
+  );
+  tournament.players.push(player);
+}
+
 export const tournamentSlice = createSlice({
   name: "tournament",
   initialState,
@@ -57,6 +74,7 @@ export const tournamentSlice = createSlice({
         name: action.payload.name,
         matchFormat: action.payload.matchFormat ?? MatchFormat.HeadToHead,
         players: [],
+        unregisterPlayers: [],
         rounds: [],
       };
       state.registry[tournament.id] = tournament;
@@ -74,7 +92,7 @@ export const tournamentSlice = createSlice({
       action: PayloadAction<{ tournamentId: TournamentId; player: PlayerId }>,
     ) => {
       const tournament = getTournament(state, action.payload.tournamentId);
-      tournament.players.push(action.payload.player);
+      registerPlayerInternal(tournament, action.payload.player);
     },
     registerPlayers: (
       state,
@@ -84,16 +102,20 @@ export const tournamentSlice = createSlice({
       }>,
     ) => {
       const tournament = getTournament(state, action.payload.tournamentId);
-      tournament.players.push(...action.payload.players);
+      for (const player of action.payload.players) {
+        registerPlayerInternal(tournament, player);
+      }
     },
     unregisterPlayer: (
       state,
       action: PayloadAction<{ tournamentId: TournamentId; player: PlayerId }>,
     ) => {
       const tournament = getTournament(state, action.payload.tournamentId);
+      const unregisteredPlayer = action.payload.player;
       tournament.players = tournament.players.filter(
-        (player) => player !== action.payload.player,
+        (player) => player !== unregisteredPlayer,
       );
+      getAvailablePlayers(tournament).push(unregisteredPlayer);
     },
     setTournamentName: (
       state,
@@ -240,6 +262,13 @@ export function hasStarted(tournament: Tournament): boolean {
 
 export function hasRegisteredPlayers(tournament: Tournament): boolean {
   return tournament.players.length > 0;
+}
+
+export function hasAvailablePlayers(tournament: Tournament): boolean {
+  return (
+    tournament.availablePlayers !== undefined &&
+    tournament.availablePlayers.length > 0
+  );
 }
 
 function getCurrentRound(tournament: Tournament): Round {

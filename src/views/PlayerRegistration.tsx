@@ -1,7 +1,10 @@
+import * as React from "react";
 import { Stack, Typography } from "@mui/material";
 import {
+  registerPlayer,
   unregisterPlayer,
   hasRegisteredPlayers,
+  hasAvailablePlayers,
   selectTournament,
   hasStarted,
   playerHasDroppedFromTournament,
@@ -47,6 +50,31 @@ export default function PlayerRegistration() {
     );
   }
 
+  let unregisteredPlayerList;
+  if (hasAvailablePlayers(tournament)) {
+    unregisteredPlayerList = (
+      <React.Fragment>
+        <Typography variant="h6">Available Players</Typography>
+        <Stack direction="row" useFlexGap spacing={1} sx={{ flexWrap: "wrap" }}>
+          {tournament.availablePlayers.map((player) => (
+            <PlayerChip
+              key={player}
+              player={player}
+              onClick={
+                canRegisterPlayers
+                  ? () =>
+                      dispatch(
+                        registerPlayer({ tournamentId: tournament.id, player }),
+                      )
+                  : undefined
+              }
+            />
+          ))}
+        </Stack>
+      </React.Fragment>
+    );
+  }
+
   let registerPlayerButton;
   if (canRegisterPlayers) {
     registerPlayerButton = (
@@ -63,6 +91,7 @@ export default function PlayerRegistration() {
       <Typography variant="h6">Players</Typography>
       {playerList}
       {registerPlayerButton}
+      {unregisteredPlayerList}
     </Stack>
   );
 }

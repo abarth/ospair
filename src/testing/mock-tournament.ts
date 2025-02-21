@@ -44,6 +44,7 @@ export function createMockTournament({
     matchFormat: matchFormat,
     rounds: [],
     players: PLAYER_NAMES.slice(0, playerCount),
+    availablePlayers: [],
   };
 }
 
