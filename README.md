@@ -8,6 +8,7 @@
  - Could also support cutting to a top-N single elimination bracket
 
 # Features
+ - Summarize how many tables are missing results
  - 2HG
   - Mixed pre-arraigned teams with dynamic teams
  - Import / export tournament data
