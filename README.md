@@ -1,4 +1,11 @@
+# Getting Started
+
+Clone this repostiory and install Node.js. Use `npm start` to start a local web
+server and use the tournament manager. The whole thing runs locally in the
+browser by using a database built into your browser.
+
 # Notes
+
  - Might be useful to be able to force a player to have a bye.
    Joel was running late and we might have wanted to give him
    a bye in the first round.
@@ -8,6 +15,7 @@
  - Could also support cutting to a top-N single elimination bracket
 
 # Features
+
  - Summarize how many tables are missing results
  - 2HG
   - Mixed pre-arraigned teams with dynamic teams
