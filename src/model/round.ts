@@ -144,15 +144,7 @@ class PlayerAllocator {
       case MatchFormat.HeadToHead:
         return { teamCount: 2, playersPerTeam: 1 };
       case MatchFormat.TwoHeadedGiant:
-        // If there are six players left, we should pair them as 3 and 3 rather than as 4 and 2.
-        if (this.playersRemaining === 6) {
-          return { teamCount: 3, playersPerTeam: 1 };
-        }
-        // If there are three players left, we pair them as a 1v1v1 rather than a 1v1 and a bye.
-        if (this.playersRemaining === 3) {
-          return { teamCount: 3, playersPerTeam: 1 };
-        }
-        if (this.playersRemaining === 2) {
+        if (this.playersRemaining === 3 || this.playersRemaining === 2) {
           return { teamCount: 2, playersPerTeam: 1 };
         }
         return { teamCount: 2, playersPerTeam: 2 };
@@ -163,39 +155,29 @@ class PlayerAllocator {
     if (this.playersRemaining === 0) {
       return [];
     }
-    switch (matchFormat) {
-      case MatchFormat.HeadToHead:
-        // In Single Player, we need to allocate byes if there is an odd number of players.
-        if (this.playersRemaining % 2 === 1) {
-          let fewestByes = 0;
-          let playerIndexWithFewestByes = null;
-          for (
-            let playerIndex = this.playersRemaining - 1;
-            playerIndex >= 0;
-            --playerIndex
-          ) {
-            const player = this.players[playerIndex];
-            if (player) {
-              const byes = this.history.playerHistory.get(player)!.byes;
-              if (byes === 0) {
-                return [this.takePlayerAt(playerIndex)];
-              }
-              if (playerIndexWithFewestByes === null || byes < fewestByes) {
-                fewestByes = byes;
-                playerIndexWithFewestByes = playerIndex;
-              }
-            }
+    if (this.playersRemaining % 2 === 1) {
+      let fewestByes = 0;
+      let playerIndexWithFewestByes = null;
+      for (
+        let playerIndex = this.playersRemaining - 1;
+        playerIndex >= 0;
+        --playerIndex
+      ) {
+        const player = this.players[playerIndex];
+        if (player) {
+          const byes = this.history.playerHistory.get(player)!.byes;
+          if (byes === 0) {
+            return [this.takePlayerAt(playerIndex)];
           }
-          return [this.takePlayerAt(playerIndexWithFewestByes!)];
+          if (playerIndexWithFewestByes === null || byes < fewestByes) {
+            fewestByes = byes;
+            playerIndexWithFewestByes = playerIndex;
+          }
         }
-        return [];
-      case MatchFormat.TwoHeadedGiant:
-        // In Two-Headed Giant, we only need to allocate byes if there is exactly one player.
-        if (this.playersRemaining === 1) {
-          return [this.takeNextPlayer()];
-        }
-        return [];
+      }
+      return [this.takePlayerAt(playerIndexWithFewestByes!)];
     }
+    return [];
   }
 
   allocatePlayers(shape: TeamShape): Team[] {
