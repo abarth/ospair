@@ -1,5 +1,7 @@
 import * as React from "react";
 import {
+  Alert,
+  Chip,
   MenuItem,
   Paper,
   Select,
@@ -19,6 +21,8 @@ import {
   setMatchDraws,
   selectRound,
   isCurrentRound,
+  tableHasResults,
+  allTablesHaveResults,
 } from "../store/tournament-slice";
 import { teamNames } from "../model/objects";
 import StyledTableRow from "./StyledTableRow";
@@ -40,11 +44,18 @@ export default function ResultsEditor() {
   );
   const teamArray = Array.from({ length: maxTeamCount }).fill(0);
   return (
-    <TableContainer component={Paper}>
+    <>
+      {allTablesHaveResults(round) && (
+        <Alert severity="success" sx={{ mb: 1 }}>
+          All tables have reported results.
+        </Alert>
+      )}
+      <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} size="small">
         <TableHead>
           <TableRow>
             <TableCell>Table</TableCell>
+            <TableCell>Status</TableCell>
             {teamArray.map((_, teamIndex) => (
               <React.Fragment key={teamIndex}>
                 <TableCell align="right">Wins</TableCell>
@@ -57,10 +68,18 @@ export default function ResultsEditor() {
         <TableBody>
           {round.tables.map((table, tableIndex) => {
             const isBye = table.teams.length === 1;
+            const hasResults = tableHasResults(table);
             return (
               <StyledTableRow key={tableIndex}>
                 <TableCell key="table-number" component="th" scope="row">
                   {isBye ? "Bye" : table.number}
+                </TableCell>
+                <TableCell key="status">
+                  {isBye ? null : hasResults ? (
+                    <Chip label="Done" color="success" size="small" />
+                  ) : (
+                    <Chip label="Pending" color="warning" size="small" />
+                  )}
                 </TableCell>
                 {teamArray.map((_, teamIndex) => {
                   if (teamIndex >= table.teams.length) {
@@ -176,5 +195,6 @@ export default function ResultsEditor() {
         </TableBody>
       </Table>
     </TableContainer>
+    </>
   );
 }
