@@ -203,6 +203,23 @@ export const tournamentSlice = createSlice({
         (id) => id !== action.payload.player,
       );
     },
+    clearTableResults: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        tableNumber: TableNumber;
+      }>,
+    ) => {
+      const table = getTableFromState(
+        state,
+        action.payload.tournamentId,
+        action.payload.roundIndex,
+        action.payload.tableNumber,
+      );
+      table.wins = table.wins.map(() => 0);
+      table.draws = 0;
+    },
     swapPlayers: (
       state,
       action: PayloadAction<{
@@ -260,6 +277,7 @@ export const {
   setMatchDraws,
   dropPlayer,
   undropPlayer,
+  clearTableResults,
   swapPlayers,
 } = tournamentSlice.actions;
 
