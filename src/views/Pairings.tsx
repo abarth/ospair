@@ -1,16 +1,12 @@
 import * as React from "react";
 import {
-  MenuItem,
   Paper,
-  Select,
-  Stack,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 import { useParams } from "react-router";
 import { useAppSelector } from "../store/hooks";
@@ -18,10 +14,8 @@ import { selectRound } from "../store/tournament-slice";
 import StyledTableRow from "./StyledTableRow";
 import TeamRoster from "./TeamRoster";
 
-export default function Pairings() {
+export default function Pairings({ columnCount }: { columnCount: number }) {
   const { roundIndex, round } = useAppSelector(selectRound(useParams()));
-  const tableCount = round?.tables.length ?? 0;
-  const [columnCount, setColumnCount] = React.useState(tableCount > 20 ? 2 : 1);
 
   if (!round) {
     return <>{`Round ${roundIndex + 1} not found`}</>;
@@ -71,31 +65,13 @@ export default function Pairings() {
   });
 
   return (
-    <Stack spacing={2} justifyContent="flex-end">
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} size="small">
-          <TableHead>
-            <TableRow>{headerCells}</TableRow>
-          </TableHead>
-          <TableBody>{rows}</TableBody>
-        </Table>
-      </TableContainer>
-      <Stack direction="row" spacing={2} alignItems="center">
-        <Typography>Columns:</Typography>
-        <Select
-          variant="outlined"
-          size="small"
-          autoWidth
-          value={columnCount}
-          onChange={(event) => {
-            setColumnCount(event.target.value as number);
-          }}
-        >
-          <MenuItem value={1}>1</MenuItem>
-          <MenuItem value={2}>2</MenuItem>
-          <MenuItem value={3}>3</MenuItem>
-        </Select>
-      </Stack>
-    </Stack>
+    <TableContainer component={Paper}>
+      <Table sx={{ minWidth: 650 }} size="small">
+        <TableHead>
+          <TableRow>{headerCells}</TableRow>
+        </TableHead>
+        <TableBody>{rows}</TableBody>
+      </Table>
+    </TableContainer>
   );
 }
