@@ -203,6 +203,45 @@ export const tournamentSlice = createSlice({
         (id) => id !== action.payload.player,
       );
     },
+    swapPlayers: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        player1: PlayerId;
+        player2: PlayerId;
+      }>,
+    ) => {
+      const tournament = getTournament(state, action.payload.tournamentId);
+      const round = tournament.rounds[action.payload.roundIndex];
+      const { player1, player2 } = action.payload;
+
+      let loc1: { tableIdx: number; teamIdx: number; playerIdx: number } | null =
+        null;
+      let loc2: { tableIdx: number; teamIdx: number; playerIdx: number } | null =
+        null;
+
+      for (let tableIdx = 0; tableIdx < round.tables.length; tableIdx++) {
+        const table = round.tables[tableIdx];
+        for (let teamIdx = 0; teamIdx < table.teams.length; teamIdx++) {
+          const team = table.teams[teamIdx];
+          for (let playerIdx = 0; playerIdx < team.length; playerIdx++) {
+            if (team[playerIdx] === player1) {
+              loc1 = { tableIdx, teamIdx, playerIdx };
+            } else if (team[playerIdx] === player2) {
+              loc2 = { tableIdx, teamIdx, playerIdx };
+            }
+          }
+        }
+      }
+
+      if (loc1 && loc2) {
+        round.tables[loc1.tableIdx].teams[loc1.teamIdx][loc1.playerIdx] =
+          player2;
+        round.tables[loc2.tableIdx].teams[loc2.teamIdx][loc2.playerIdx] =
+          player1;
+      }
+    },
   },
 });
 
@@ -221,6 +260,7 @@ export const {
   setMatchDraws,
   dropPlayer,
   undropPlayer,
+  swapPlayers,
 } = tournamentSlice.actions;
 
 export function selectAllTournaments(state: RootState): Tournament[] {
