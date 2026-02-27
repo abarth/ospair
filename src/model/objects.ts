@@ -53,13 +53,6 @@ export interface Table {
 
   /// The number of draws for the table.
   draws: number;
-
-  /// Whether results have been explicitly recorded for this table.
-  ///
-  /// A table may have 0 wins and 0 draws legitimately (e.g., when losses are
-  /// awarded as a penalty), so this flag distinguishes an intentionally
-  /// recorded result from the initial unplayed state.
-  reported?: boolean;
 }
 
 export interface Seating {

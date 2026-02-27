@@ -156,7 +156,6 @@ export const tournamentSlice = createSlice({
         action.payload.tableNumber,
       );
       table.wins[action.payload.teamIndex] = action.payload.wins;
-      table.reported = true;
     },
     setMatchDraws: (
       state,
@@ -174,7 +173,6 @@ export const tournamentSlice = createSlice({
         action.payload.tableNumber,
       );
       table.draws = action.payload.draws;
-      table.reported = true;
     },
     dropPlayer: (
       state,
@@ -329,11 +327,7 @@ export function tableHasResults(table: Table): boolean {
   if (table.teams.length === 1) {
     return true; // Bye tables are automatically complete
   }
-  // `reported` is set explicitly when results are recorded, which handles the
-  // case where a penalty results in 0 wins for all teams (otherwise
-  // indistinguishable from the initial unplayed state). Fall back to checking
-  // wins/draws for backwards compatibility with existing data.
-  return table.reported === true || table.wins.some((w) => w > 0) || table.draws > 0;
+  return table.wins.some((w) => w > 0) || table.draws > 0;
 }
 
 export function allTablesHaveResults(round: Round): boolean {

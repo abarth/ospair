@@ -49,18 +49,6 @@ describe("tableHasResults", () => {
     const table = makeTable({ wins: [1, 1], draws: 1 });
     expect(tableHasResults(table)).toBe(true);
   });
-
-  test("table with reported flag has results even when all wins and draws are 0", () => {
-    // A penalty can result in losses for all teams (0 wins, 0 draws), which is
-    // a valid result but looks the same as the initial unplayed state.
-    const table = makeTable({ wins: [0, 0], draws: 0, reported: true });
-    expect(tableHasResults(table)).toBe(true);
-  });
-
-  test("table without reported flag and 0 wins and 0 draws has no results", () => {
-    const table = makeTable({ wins: [0, 0], draws: 0, reported: false });
-    expect(tableHasResults(table)).toBe(false);
-  });
 });
 
 describe("allTablesHaveResults", () => {
@@ -109,13 +97,5 @@ describe("allTablesHaveResults", () => {
       makeTable({ number: 3, wins: [0, 0], draws: 0 }),
     ]);
     expect(allTablesHaveResults(round)).toBe(false);
-  });
-
-  test("table reported via penalty loss (0 wins, 0 draws) is treated as done", () => {
-    const round = makeRound([
-      makeTable({ number: 1, wins: [2, 0], draws: 0 }),
-      makeTable({ number: 2, wins: [0, 0], draws: 0, reported: true }),
-    ]);
-    expect(allTablesHaveResults(round)).toBe(true);
   });
 });
