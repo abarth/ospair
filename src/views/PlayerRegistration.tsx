@@ -12,6 +12,7 @@ import { selectSortedPlayerIds } from "../store/player-slice";
 import PlayerImporter from "./PlayerImporter";
 import PlayerChip from "./PlayerChip";
 import RegisterPlayerButton from "./RegisterPlayerButton";
+import RenamePlayerButton from "./RenamePlayerButton";
 import { useParams } from "react-router";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
@@ -35,22 +36,24 @@ export default function PlayerRegistration() {
           {players.map((player) => {
             const dropped = playerHasDroppedFromTournament(tournament, player);
             return (
-              <PlayerChip
-                key={player}
-                player={player}
-                color={dropped ? "error" : undefined}
-                onDelete={
-                  canRegisterPlayers
-                    ? () =>
-                        dispatch(
-                          unregisterPlayer({
-                            tournamentId: tournament.id,
-                            player,
-                          }),
-                        )
-                    : undefined
-                }
-              />
+              <Stack key={player} direction="row" alignItems="center">
+                <PlayerChip
+                  player={player}
+                  color={dropped ? "error" : undefined}
+                  onDelete={
+                    canRegisterPlayers
+                      ? () =>
+                          dispatch(
+                            unregisterPlayer({
+                              tournamentId: tournament.id,
+                              player,
+                            }),
+                          )
+                      : undefined
+                  }
+                />
+                <RenamePlayerButton player={player} />
+              </Stack>
             );
           })}
         </Stack>

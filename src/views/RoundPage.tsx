@@ -11,19 +11,22 @@ import RoundBody from "./RoundBody";
 import DrawerButton from "./DrawerButton";
 import RoundSelector from "./RoundSelector";
 import DeleteRoundButton from "./DeleteRoundButton";
+import AddPlayerToRoundButton from "./AddPlayerToRoundButton";
 
 export default function RoundPage() {
   const { tournament, roundIndex } = useAppSelector(selectRound(useParams()));
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const currentRound = isCurrentRound(tournament, roundIndex);
 
   const actions = (
     <Stack direction="row" spacing={2}>
       <DeleteRoundButton />
+      {currentRound && <AddPlayerToRoundButton />}
       <Button
         color="inherit"
         variant="outlined"
-        disabled={!isCurrentRound(tournament, roundIndex)}
+        disabled={!currentRound}
         onClick={() => {
           dispatch(createNextRound(tournament.id));
           navigate(
