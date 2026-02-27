@@ -7,7 +7,7 @@ import {
   createNextRound,
   swapPlayers,
 } from "./tournament-slice";
-import { MatchFormat } from "../model/objects";
+import { MatchFormat, Table } from "../model/objects";
 
 function createTestStore() {
   return configureStore({
@@ -81,7 +81,7 @@ function setupTwoHeadedGiantTournament() {
 function getAllPlayers(store: ReturnType<typeof createTestStore>) {
   const state = store.getState();
   const round = state.tournament.registry["t1"].rounds[0];
-  return round.tables.flatMap((table) => table.teams.flat());
+  return round.tables.flatMap((table: Table) => table.teams.flat());
 }
 
 describe("swapPlayers", () => {
