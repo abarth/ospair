@@ -1,6 +1,6 @@
 import * as React from "react";
 import { CssBaseline } from "@mui/material";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { HashRouter, Route, Routes } from "react-router";
 import HomePage from "./views/HomePage";
 import TournamentPage from "./views/TournamentPage";
 import RoundPage from "./views/RoundPage";
@@ -9,7 +9,7 @@ function App() {
   return (
     <React.Fragment>
       <CssBaseline />
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route
@@ -21,7 +21,7 @@ function App() {
             element={<RoundPage />}
           />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </React.Fragment>
   );
 }
