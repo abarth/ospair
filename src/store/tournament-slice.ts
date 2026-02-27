@@ -323,6 +323,17 @@ export function playerHasDropped(round: Round, player: PlayerId): boolean {
   return round.dropped.includes(player);
 }
 
+export function tableHasResults(table: Table): boolean {
+  if (table.teams.length === 1) {
+    return true; // Bye tables are automatically complete
+  }
+  return table.wins.some((w) => w > 0) || table.draws > 0;
+}
+
+export function allTablesHaveResults(round: Round): boolean {
+  return round.tables.every((table) => tableHasResults(table));
+}
+
 export function playerHasDroppedFromTournament(
   tournament: Tournament,
   player: PlayerId,
