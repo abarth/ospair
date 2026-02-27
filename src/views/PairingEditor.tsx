@@ -112,11 +112,9 @@ export default function PairingEditor() {
   );
   const [dropTargetPlayer, setDropTargetPlayer] =
     React.useState<PlayerId | null>(null);
-  const [dropTargetByeZone, setDropTargetByeZone] = React.useState<
-    number | null
-  >(null);
+  const [isOverByeZone, setIsOverByeZone] = React.useState(false);
 
-  // Table-level drag state (for reordering)
+  // Table-level drag state (for reordering match tables only)
   const [draggedTableIdx, setDraggedTableIdx] = React.useState<number | null>(
     null,
   );
@@ -133,7 +131,15 @@ export default function PairingEditor() {
 
   const isEditable = isCurrentRound(tournament, roundIndex);
 
-  // Build a map from playerId to tableIdx for quick lookup
+  // Separate match tables and bye tables; byes always rendered last
+  const matchTableEntries = round.tables
+    .map((table, globalIdx) => ({ table, globalIdx }))
+    .filter(({ table }) => table.teams.length > 1);
+  const byeTableEntries = round.tables
+    .map((table, globalIdx) => ({ table, globalIdx }))
+    .filter(({ table }) => table.teams.length === 1);
+
+  // Build a map from playerId to global tableIdx for quick lookup
   const playerTableIdx = new Map<PlayerId, number>();
   round.tables.forEach((table, idx) => {
     table.teams.forEach((team) => team.forEach((p) => playerTableIdx.set(p, idx)));
@@ -150,20 +156,20 @@ export default function PairingEditor() {
   const handleDragStart = (player: PlayerId) => {
     setDraggedPlayer(player);
     setDropTargetPlayer(null);
-    setDropTargetByeZone(null);
+    setIsOverByeZone(false);
     setDraggedTableIdx(null);
   };
 
   const handleDragEnd = () => {
     setDraggedPlayer(null);
     setDropTargetPlayer(null);
-    setDropTargetByeZone(null);
+    setIsOverByeZone(false);
   };
 
   const handleDragOver = (player: PlayerId) => {
     if (player !== draggedPlayer) {
       setDropTargetPlayer(player);
-      setDropTargetByeZone(null);
+      setIsOverByeZone(false);
     }
   };
 
@@ -191,18 +197,13 @@ export default function PairingEditor() {
     }
     setDraggedPlayer(null);
     setDropTargetPlayer(null);
-    setDropTargetByeZone(null);
+    setIsOverByeZone(false);
   };
 
-  // --- Bye zone drag handlers ---
-
-  const handleByeZoneDragOver = (tableIdx: number) => {
-    setDropTargetByeZone(tableIdx);
-    setDropTargetPlayer(null);
-  };
+  // --- Global bye zone handlers ---
 
   const handleByeZoneDrop = () => {
-    if (draggedPlayer && dropTargetByeZone !== null) {
+    if (draggedPlayer && !isPlayerInBye(draggedPlayer)) {
       dispatch(
         movePlayerToBye({
           tournamentId: tournament.id,
@@ -213,13 +214,13 @@ export default function PairingEditor() {
     }
     setDraggedPlayer(null);
     setDropTargetPlayer(null);
-    setDropTargetByeZone(null);
+    setIsOverByeZone(false);
   };
 
-  // --- Table drag handlers (reordering) ---
+  // --- Table drag handlers (reordering match tables only) ---
 
-  const handleTableDragStart = (tableIdx: number) => {
-    setDraggedTableIdx(tableIdx);
+  const handleTableDragStart = (globalIdx: number) => {
+    setDraggedTableIdx(globalIdx);
     setDropTargetTableIdx(null);
     setDraggedPlayer(null);
   };
@@ -229,34 +230,28 @@ export default function PairingEditor() {
     setDropTargetTableIdx(null);
   };
 
-  const handleTableCardDragOver = (
-    e: React.DragEvent,
-    tableIdx: number,
-  ) => {
+  const handleMatchCardDragOver = (e: React.DragEvent, globalIdx: number) => {
     if (draggedTableIdx !== null) {
       e.preventDefault();
-      setDropTargetTableIdx(tableIdx);
+      setDropTargetTableIdx(globalIdx);
     }
   };
 
-  const handleTableCardDragLeave = (
-    e: React.DragEvent,
-    tableIdx: number,
-  ) => {
+  const handleMatchCardDragLeave = (e: React.DragEvent, globalIdx: number) => {
     if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-      if (dropTargetTableIdx === tableIdx) setDropTargetTableIdx(null);
+      if (dropTargetTableIdx === globalIdx) setDropTargetTableIdx(null);
     }
   };
 
-  const handleTableCardDrop = (e: React.DragEvent, toIdx: number) => {
-    if (draggedTableIdx !== null && draggedTableIdx !== toIdx) {
+  const handleMatchCardDrop = (e: React.DragEvent, toGlobalIdx: number) => {
+    if (draggedTableIdx !== null && draggedTableIdx !== toGlobalIdx) {
       e.preventDefault();
       dispatch(
         moveTable({
           tournamentId: tournament.id,
           roundIndex,
           fromIndex: draggedTableIdx,
-          toIndex: toIdx,
+          toIndex: toGlobalIdx,
         }),
       );
     }
@@ -279,14 +274,127 @@ export default function PairingEditor() {
 
   const isDraggingPlayer = draggedPlayer !== null;
   const isDraggingTable = draggedTableIdx !== null;
+  // Show global bye zone only when dragging a non-bye player
+  const showByeZone =
+    isEditable && isDraggingPlayer && !isPlayerInBye(draggedPlayer!);
+
+  const renderCard = (
+    table: (typeof round.tables)[number],
+    globalIdx: number,
+    isBye: boolean,
+  ) => {
+    const isLocked = isEditable && !isBye && tableHasResults(table);
+    const isTableDragging = draggedTableIdx === globalIdx;
+    const isTableDropTarget = isDraggingTable && dropTargetTableIdx === globalIdx;
+
+    return (
+      <Card
+        key={table.number}
+        variant="outlined"
+        onDragOver={!isBye ? (e) => handleMatchCardDragOver(e, globalIdx) : undefined}
+        onDragLeave={!isBye ? (e) => handleMatchCardDragLeave(e, globalIdx) : undefined}
+        onDrop={!isBye ? (e) => handleMatchCardDrop(e, globalIdx) : undefined}
+        sx={{
+          width: 240,
+          borderColor: isTableDropTarget
+            ? "primary.main"
+            : isLocked
+              ? "success.main"
+              : undefined,
+          borderWidth: isTableDropTarget || isLocked ? 2 : 1,
+          borderStyle: isTableDropTarget ? "dashed" : "solid",
+          opacity: isTableDragging ? 0.4 : 1,
+          transition: "opacity 0.15s, border-color 0.15s",
+        }}
+        data-testid={isBye ? "bye-table" : `table-${table.number}`}
+      >
+        <CardContent sx={{ pb: "12px !important" }}>
+          <Stack direction="row" alignItems="center" spacing={0.5} sx={{ mb: 0.5 }}>
+            {isEditable && !isBye && (
+              <Box
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.effectAllowed = "move";
+                  e.stopPropagation();
+                  handleTableDragStart(globalIdx);
+                }}
+                onDragEnd={handleTableDragEnd}
+                sx={{
+                  cursor: "grab",
+                  display: "flex",
+                  alignItems: "center",
+                  color: "text.disabled",
+                  "&:hover": { color: "text.secondary" },
+                }}
+              >
+                <DragIndicatorIcon sx={{ fontSize: 16 }} />
+              </Box>
+            )}
+            <Typography variant="subtitle2" color="text.secondary">
+              {isBye ? "Bye" : `Table ${table.number}`}
+            </Typography>
+            {isLocked && (
+              <LockOutlinedIcon sx={{ color: "success.main", fontSize: 14 }} />
+            )}
+          </Stack>
+          {isLocked && (
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 0.5 }}>
+              <Typography variant="caption" color="success.main">
+                Results reported
+              </Typography>
+              <Button
+                size="small"
+                color="warning"
+                sx={{ py: 0, minHeight: 0, lineHeight: 1 }}
+                onClick={() => setConfirmClearTable(table.number)}
+              >
+                Clear
+              </Button>
+            </Stack>
+          )}
+          <Stack spacing={1}>
+            {table.teams.map((team, teamIndex) => (
+              <React.Fragment key={teamIndex}>
+                {teamIndex > 0 && (
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    align="center"
+                    display="block"
+                  >
+                    vs
+                  </Typography>
+                )}
+                <Stack direction="row" spacing={0.5} flexWrap="wrap">
+                  {team.map((player) => (
+                    <DraggablePlayerChip
+                      key={player}
+                      player={player}
+                      isEditable={isEditable && !isLocked}
+                      isDragging={draggedPlayer === player}
+                      isDropTarget={dropTargetPlayer === player}
+                      onDragStart={() => handleDragStart(player)}
+                      onDragEnd={handleDragEnd}
+                      onDragOver={() => handleDragOver(player)}
+                      onDrop={() => handleDrop(player)}
+                    />
+                  ))}
+                </Stack>
+              </React.Fragment>
+            ))}
+          </Stack>
+        </CardContent>
+      </Card>
+    );
+  };
 
   return (
     <>
       <Alert severity="info" sx={{ mb: 2 }}>
-        Drag players to swap seats. Drop a player onto a bye's chip to swap, or
-        onto the "Give bye" zone to move them to a bye. Drag two bye players
-        together to pair them. Use the grip handle to reorder tables. Tables
-        with results are locked — clear results first to edit pairings.
+        Drag players to swap seats. Drop a bye player onto another bye player to
+        pair them. Use the grip handle to reorder tables. Drop any player onto
+        the "Give bye" zone to move them to a bye. Tables with results are
+        locked — clear results first to edit pairings.
       </Alert>
       <Box
         sx={{
@@ -296,171 +404,45 @@ export default function PairingEditor() {
           alignItems: "flex-start",
         }}
       >
-        {round.tables.map((table, tableIdx) => {
-          const isBye = table.teams.length === 1;
-          const isLocked = isEditable && !isBye && tableHasResults(table);
-          const isTableDragging = draggedTableIdx === tableIdx;
-          const isTableDropTarget =
-            isDraggingTable && dropTargetTableIdx === tableIdx;
-
-          // Show bye drop zone when a non-bye player is being dragged and this is a bye card
-          const showByeZone =
-            isEditable &&
-            isDraggingPlayer &&
-            isBye &&
-            !isPlayerInBye(draggedPlayer!);
-
-          return (
-            <Card
-              key={table.number}
-              variant="outlined"
-              onDragOver={(e) => handleTableCardDragOver(e, tableIdx)}
-              onDragLeave={(e) => handleTableCardDragLeave(e, tableIdx)}
-              onDrop={(e) => handleTableCardDrop(e, tableIdx)}
-              sx={{
-                width: 240,
-                borderColor: isTableDropTarget
-                  ? "primary.main"
-                  : isLocked
-                    ? "success.main"
-                    : undefined,
-                borderWidth: isTableDropTarget || isLocked ? 2 : 1,
-                borderStyle: isTableDropTarget ? "dashed" : "solid",
-                opacity: isTableDragging ? 0.4 : 1,
-                transition: "opacity 0.15s, border-color 0.15s",
-              }}
-              data-testid={isBye ? "bye-table" : `table-${table.number}`}
-            >
-              <CardContent sx={{ pb: "12px !important" }}>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  spacing={0.5}
-                  sx={{ mb: 0.5 }}
-                >
-                  {isEditable && (
-                    <Box
-                      draggable
-                      onDragStart={(e) => {
-                        e.dataTransfer.effectAllowed = "move";
-                        e.stopPropagation();
-                        handleTableDragStart(tableIdx);
-                      }}
-                      onDragEnd={handleTableDragEnd}
-                      sx={{
-                        cursor: "grab",
-                        display: "flex",
-                        alignItems: "center",
-                        color: "text.disabled",
-                        "&:hover": { color: "text.secondary" },
-                      }}
-                    >
-                      <DragIndicatorIcon sx={{ fontSize: 16 }} />
-                    </Box>
-                  )}
-                  <Typography variant="subtitle2" color="text.secondary">
-                    {isBye ? "Bye" : `Table ${table.number}`}
-                  </Typography>
-                  {isLocked && (
-                    <LockOutlinedIcon
-                      sx={{ color: "success.main", fontSize: 14 }}
-                    />
-                  )}
-                </Stack>
-                {isLocked && (
-                  <Typography
-                    variant="caption"
-                    color="success.main"
-                    display="block"
-                    sx={{ mb: 0.5 }}
-                  >
-                    Results reported
-                  </Typography>
-                )}
-                <Stack spacing={1}>
-                  {table.teams.map((team, teamIndex) => (
-                    <React.Fragment key={teamIndex}>
-                      {teamIndex > 0 && (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          align="center"
-                          display="block"
-                        >
-                          vs
-                        </Typography>
-                      )}
-                      <Stack direction="row" spacing={0.5} flexWrap="wrap">
-                        {team.map((player) => (
-                          <DraggablePlayerChip
-                            key={player}
-                            player={player}
-                            isEditable={isEditable && !isLocked}
-                            isDragging={draggedPlayer === player}
-                            isDropTarget={dropTargetPlayer === player}
-                            onDragStart={() => handleDragStart(player)}
-                            onDragEnd={handleDragEnd}
-                            onDragOver={() => handleDragOver(player)}
-                            onDrop={() => handleDrop(player)}
-                          />
-                        ))}
-                      </Stack>
-                    </React.Fragment>
-                  ))}
-                </Stack>
-                {showByeZone && (
-                  <Box
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleByeZoneDragOver(tableIdx);
-                    }}
-                    onDragLeave={() => {
-                      if (dropTargetByeZone === tableIdx)
-                        setDropTargetByeZone(null);
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleByeZoneDrop();
-                    }}
-                    sx={{
-                      mt: 1,
-                      border: "2px dashed",
-                      borderColor:
-                        dropTargetByeZone === tableIdx
-                          ? "primary.main"
-                          : "grey.400",
-                      borderRadius: 1,
-                      p: 0.5,
-                      textAlign: "center",
-                      backgroundColor:
-                        dropTargetByeZone === tableIdx
-                          ? "action.selected"
-                          : undefined,
-                      transition: "border-color 0.1s, background-color 0.1s",
-                    }}
-                  >
-                    <Typography variant="caption" color="text.secondary">
-                      Give bye
-                    </Typography>
-                  </Box>
-                )}
-                {isLocked && (
-                  <Button
-                    size="small"
-                    color="warning"
-                    sx={{ mt: 1 }}
-                    onClick={() => setConfirmClearTable(table.number)}
-                  >
-                    Clear Results
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
+        {matchTableEntries.map(({ table, globalIdx }) =>
+          renderCard(table, globalIdx, false),
+        )}
+        {byeTableEntries.map(({ table, globalIdx }) =>
+          renderCard(table, globalIdx, true),
+        )}
       </Box>
+      {showByeZone && (
+        <Box
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsOverByeZone(true);
+            setDropTargetPlayer(null);
+          }}
+          onDragLeave={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+              setIsOverByeZone(false);
+            }
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            handleByeZoneDrop();
+          }}
+          sx={{
+            mt: 2,
+            border: "2px dashed",
+            borderColor: isOverByeZone ? "primary.main" : "grey.400",
+            borderRadius: 1,
+            p: 2,
+            textAlign: "center",
+            backgroundColor: isOverByeZone ? "action.selected" : undefined,
+            transition: "border-color 0.1s, background-color 0.1s",
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Give bye
+          </Typography>
+        </Box>
+      )}
       <Dialog
         open={confirmClearTable !== null}
         onClose={() => setConfirmClearTable(null)}
@@ -480,7 +462,7 @@ export default function PairingEditor() {
             color="warning"
             variant="contained"
           >
-            Clear Results
+            Clear
           </Button>
         </DialogActions>
       </Dialog>
