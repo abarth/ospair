@@ -259,6 +259,36 @@ export const tournamentSlice = createSlice({
           player1;
       }
     },
+    addPlayerMidTournament: (
+      state,
+      action: PayloadAction<{ tournamentId: TournamentId; player: PlayerId }>,
+    ) => {
+      const tournament = getTournament(state, action.payload.tournamentId);
+      const player = action.payload.player;
+      // Add to the tournament's player list if not already present.
+      if (
+        !tournament.players.includes(player) &&
+        !tournament.availablePlayers.includes(player)
+      ) {
+        tournament.players.push(player);
+      } else {
+        // If in the available list, move them to the active list.
+        registerPlayerInternal(tournament, player);
+      }
+      // Give the player a bye in every existing round so their history
+      // reflects that they were present from the start.
+      for (const round of tournament.rounds) {
+        if (!round.players.includes(player)) {
+          round.players.push(player);
+          round.tables.push({
+            number: round.tables.length + 1,
+            teams: [[player]],
+            wins: [2],
+            draws: 0,
+          });
+        }
+      }
+    },
   },
 });
 
@@ -279,6 +309,7 @@ export const {
   undropPlayer,
   clearTableResults,
   swapPlayers,
+  addPlayerMidTournament,
 } = tournamentSlice.actions;
 
 export function selectAllTournaments(state: RootState): Tournament[] {
