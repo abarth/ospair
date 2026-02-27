@@ -24,10 +24,20 @@ export const playerSlice = createSlice({
         state.registry[player.id] = { ...player };
       }
     },
+    renamePlayer: (
+      state,
+      action: PayloadAction<{ id: PlayerId; name: string; club?: string }>,
+    ) => {
+      const player = state.registry[action.payload.id];
+      if (player) {
+        player.name = action.payload.name;
+        player.club = action.payload.club;
+      }
+    },
   },
 });
 
-export const { addPlayer, addPlayers } = playerSlice.actions;
+export const { addPlayer, addPlayers, renamePlayer } = playerSlice.actions;
 
 function getPlayer(state: RootState, id: PlayerId): Player {
   return state.player.registry[id]!;
