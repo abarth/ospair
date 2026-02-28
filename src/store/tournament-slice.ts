@@ -41,6 +41,12 @@ function getTableFromState(
   return getTable(tournament, roundIndex, tableNumber);
 }
 
+function renumberTables(round: Round): void {
+  round.tables.forEach((table, index) => {
+    table.number = (index + 1) as TableNumber;
+  });
+}
+
 function registerPlayerInternal(
   tournament: Tournament,
   player: PlayerId,
@@ -203,6 +209,179 @@ export const tournamentSlice = createSlice({
         (id) => id !== action.payload.player,
       );
     },
+    clearTableResults: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        tableNumber: TableNumber;
+      }>,
+    ) => {
+      const table = getTableFromState(
+        state,
+        action.payload.tournamentId,
+        action.payload.roundIndex,
+        action.payload.tableNumber,
+      );
+      table.wins = table.wins.map(() => 0);
+      table.draws = 0;
+    },
+    swapPlayers: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        player1: PlayerId;
+        player2: PlayerId;
+      }>,
+    ) => {
+      const tournament = getTournament(state, action.payload.tournamentId);
+      const round = tournament.rounds[action.payload.roundIndex];
+      const { player1, player2 } = action.payload;
+
+      let loc1: { tableIdx: number; teamIdx: number; playerIdx: number } | null =
+        null;
+      let loc2: { tableIdx: number; teamIdx: number; playerIdx: number } | null =
+        null;
+
+      for (let tableIdx = 0; tableIdx < round.tables.length; tableIdx++) {
+        const table = round.tables[tableIdx];
+        for (let teamIdx = 0; teamIdx < table.teams.length; teamIdx++) {
+          const team = table.teams[teamIdx];
+          for (let playerIdx = 0; playerIdx < team.length; playerIdx++) {
+            if (team[playerIdx] === player1) {
+              loc1 = { tableIdx, teamIdx, playerIdx };
+            } else if (team[playerIdx] === player2) {
+              loc2 = { tableIdx, teamIdx, playerIdx };
+            }
+          }
+        }
+      }
+
+      if (loc1 && loc2) {
+        round.tables[loc1.tableIdx].teams[loc1.teamIdx][loc1.playerIdx] =
+          player2;
+        round.tables[loc2.tableIdx].teams[loc2.teamIdx][loc2.playerIdx] =
+          player1;
+      }
+    },
+    movePlayerToBye: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        player: PlayerId;
+      }>,
+    ) => {
+      const tournament = getTournament(state, action.payload.tournamentId);
+      const round = tournament.rounds[action.payload.roundIndex];
+      const { player } = action.payload;
+
+      let tableIdx = -1;
+      let teamIdx = -1;
+      let playerIdx = -1;
+
+      outer: for (let ti = 0; ti < round.tables.length; ti++) {
+        const table = round.tables[ti];
+        for (let tmi = 0; tmi < table.teams.length; tmi++) {
+          const team = table.teams[tmi];
+          for (let pi = 0; pi < team.length; pi++) {
+            if (team[pi] === player) {
+              tableIdx = ti;
+              teamIdx = tmi;
+              playerIdx = pi;
+              break outer;
+            }
+          }
+        }
+      }
+
+      if (tableIdx === -1) return;
+
+      const table = round.tables[tableIdx];
+      table.teams[teamIdx].splice(playerIdx, 1);
+
+      if (table.teams[teamIdx].length === 0) {
+        table.teams.splice(teamIdx, 1);
+        table.wins.splice(teamIdx, 1);
+      }
+
+      if (table.teams.length === 0) {
+        round.tables.splice(tableIdx, 1);
+      } else if (table.teams.length === 1 && table.teams[0].length === 1) {
+        // Remaining player becomes a bye
+        table.wins = [2];
+        table.draws = 0;
+      }
+
+      round.tables.push({
+        number: round.tables.length + 1,
+        teams: [[player]],
+        wins: [2],
+        draws: 0,
+      });
+
+      renumberTables(round);
+    },
+    pairByePlayers: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        player1: PlayerId;
+        player2: PlayerId;
+      }>,
+    ) => {
+      const tournament = getTournament(state, action.payload.tournamentId);
+      const round = tournament.rounds[action.payload.roundIndex];
+      const { player1, player2 } = action.payload;
+
+      let table1Idx = -1;
+      let table2Idx = -1;
+      for (let ti = 0; ti < round.tables.length; ti++) {
+        const table = round.tables[ti];
+        if (table.teams.length === 1) {
+          if (table.teams[0].includes(player1)) table1Idx = ti;
+          if (table.teams[0].includes(player2)) table2Idx = ti;
+        }
+      }
+
+      if (table1Idx === -1 || table2Idx === -1 || table1Idx === table2Idx) return;
+
+      const loIdx = Math.min(table1Idx, table2Idx);
+      const hiIdx = Math.max(table1Idx, table2Idx);
+      round.tables.splice(hiIdx, 1);
+      round.tables.splice(loIdx, 1);
+
+      round.tables.splice(loIdx, 0, {
+        number: loIdx + 1,
+        teams: [[player1], [player2]],
+        wins: [0, 0],
+        draws: 0,
+      });
+
+      renumberTables(round);
+    },
+    moveTable: (
+      state,
+      action: PayloadAction<{
+        tournamentId: TournamentId;
+        roundIndex: RoundIndex;
+        fromIndex: number;
+        toIndex: number;
+      }>,
+    ) => {
+      const tournament = getTournament(state, action.payload.tournamentId);
+      const round = tournament.rounds[action.payload.roundIndex];
+      const { fromIndex, toIndex } = action.payload;
+
+      if (fromIndex === toIndex) return;
+
+      const [movedTable] = round.tables.splice(fromIndex, 1);
+      round.tables.splice(toIndex, 0, movedTable);
+
+      renumberTables(round);
+    },
     addPlayerMidTournament: (
       state,
       action: PayloadAction<{ tournamentId: TournamentId; player: PlayerId }>,
@@ -251,6 +430,11 @@ export const {
   setMatchDraws,
   dropPlayer,
   undropPlayer,
+  clearTableResults,
+  swapPlayers,
+  movePlayerToBye,
+  pairByePlayers,
+  moveTable,
   addPlayerMidTournament,
 } = tournamentSlice.actions;
 
